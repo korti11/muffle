@@ -1,0 +1,199 @@
+name: Test branch
+
+on:
+  project_card:
+    types: [moved]
+
+jobs:
+  is-right-project-column:
+    name: Check if it is the In testing column
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get project column name
+        id: project_column
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        uses: octokit/request-action@v1.x
+        with:
+          route: GET ${{github.event.project_card.column_url}}
+          Authorization: token ${{secrets.GITHUB_TOKEN}}
+          mediaType: '{"previews": ["inertia"]}'
+      - name: Get column name from JSON
+        id: json
+        uses: gr2m/get-json-paths-action@v1.x
+        with:
+          json: ${{steps.project_column.outputs.data}}
+          name: "name"
+      - name: Write column name
+        shell: bash
+        run: |
+          expr "${{steps.json.outputs.name}}" > column-result.txt
+      - name: Upload column name
+        uses: actions/upload-artifact@v1
+        with:
+          name: column-result
+          path: column-result.txt
+  get-branch-name:
+    name: Get the branch name
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get issue
+        id: issue
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        uses: octokit/request-action@v1.x
+        with:
+          route: GET ${{github.event.project_card.content_url}}
+          Authorization: token ${{secrets.GITHUB_TOKEN}}
+          mediaType: '{"previews": ["symmetra"]}'
+      - name: Parse issue to JSON
+        id: issue_json
+        uses: gr2m/get-json-paths-action@v1.x
+        with:
+          json: ${{steps.issue.outputs.data}}
+          number: "number"
+      - name: Find branch
+        id: find_branch
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        uses: octokit/request-action@v1.x
+        with:
+          route: GET ${{format('https://api.github.com/repos/{0}/{1}/git/matching-refs/heads/feature/{2}', 'korti11', 'muffle', steps.issue_json.outputs.number)}}
+          Authorization: token ${{secrets.GITHUB_TOKEN}}
+      - name: Parse branch name to JSON
+        id: branch_json
+        uses: gr2m/get-json-paths-action@v1.x
+        with:
+          json: ${{steps.find_branch.outputs.data}}
+          branch_name: "[0].ref"
+      - name: Write branch name
+        if: steps.branch_json.outputs.branch_name != ''
+        shell: bash
+        run: |
+          expr "${{steps.branch_json.outputs.branch_name}}" > branch-name.txt
+      - name: Upload branch name
+        if: steps.branch_json.outputs.branch_name != ''
+        uses: actions/upload-artifact@v1
+        with:
+          name: branch-name
+          path: branch-name.txt
+  run-unit-tests:
+    name: Run unit tests for branch
+    needs: [is-right-project-column, get-branch-name]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Downlaod column result
+        uses: actions/download-artifact@v1
+        with:
+          name: column-result
+      - name: Write env variable
+        shell: bash
+        run: |
+          value=`cat column-result/column-result.txt`
+          echo "::set-env name=COLUMN_NAME::$value"
+      - name: Download branch name
+        if: env.COLUMN_NAME == 'In testing'
+        uses: actions/download-artifact@v1
+        with:
+          name: branch-name
+      - name: Write env variable
+        if: env.COLUMN_NAME == 'In testing'
+        shell: bash
+        run: |
+          value=`cat branch-name/branch-name.txt`
+          echo "::set-env name=BRANCH_NAME::$value"
+      - name: Checkout branch
+        if: env.COLUMN_NAME == 'In testing'
+        uses: actions/checkout@v1
+        with:
+          ref: ${{env.BRANCH_NAME}}
+      - name: Setup JDK 1.8
+        if: env.COLUMN_NAME == 'In testing'
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: Run unit tests
+        if: env.COLUMN_NAME == 'In testing'
+        run: ./gradlew testDebugUnitTest
+        continue-on-error: true
+#      - name: Report     # sadly not working
+#        if: env.COLUMN_NAME == 'In testing'
+#        uses: asadmansr/android-test-report-action@master
+  run-integration-tests:
+    name: Run integration tests for branch
+    needs: [is-right-project-column, get-branch-name]
+    runs-on: macOS-latest
+    steps:
+      - name: Downlaod column result
+        uses: actions/download-artifact@v1
+        with:
+          name: column-result
+      - name: Write env variable
+        shell: bash
+        run: |
+          value=`cat column-result/column-result.txt`
+          echo "::set-env name=COLUMN_NAME::$value"
+      - name: Download branch name
+        if: env.COLUMN_NAME == 'In testing'
+        uses: actions/download-artifact@v1
+        with:
+          name: branch-name
+      - name: Write env variable
+        if: env.COLUMN_NAME == 'In testing'
+        shell: bash
+        run: |
+          value=`cat branch-name/branch-name.txt`
+          echo "::set-env name=BRANCH_NAME::$value"
+      - name: Checkout branch
+        if: env.COLUMN_NAME == 'In testing'
+        uses: actions/checkout@v1
+        with:
+          ref: ${{env.BRANCH_NAME}}
+      - name: Run integration tests
+        if: env.COLUMN_NAME == 'In testing'
+        uses: reactivecircus/android-emulator-runner@v1
+        with:
+          api-level: 29
+          script: ./gradlew connectedCheck
+  pull-request-on-feature-branch:
+    name: Pull request from feature branch to master branch
+    needs: [run-unit-tests, run-integration-tests, get-branch-name]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download column result
+        uses: actions/download-artifact@v1
+        with:
+          name: column-result
+      - name: Write env variable
+        shell: bash
+        run: |
+          value=`cat column-result/column-result.txt`
+          echo "::set-env name=COLUMN_NAME::$value"
+      - name: Download branch name
+        if: env.COLUMN_NAME == 'In testing'
+        uses: actions/download-artifact@v1
+        with:
+          name: branch-name
+      - name: Write env variable
+        if: env.COLUMN_NAME == 'In testing'
+        shell: bash
+        run: |
+          value=`cat branch-name/branch-name.txt`
+          echo "::set-env name=BRANCH_NAME::$value"
+      - name: Check out branch
+        if: env.COLUMN_NAME == 'In testing'
+        uses: actions/checkout@v1
+        with:
+          ref: ${{env.BRANCH_NAME}}
+      - name: Create pull request
+        if: env.COLUMN_NAME == 'In testing'
+        uses: repo-sync/pull-request@v2.0.1
+        with:
+          source_branch: ${{env.BRANCH_NAME}}
+          default_branch: 'master'
+          pr_title: "Pulling ${{env.BRANCH_NAME}} into master"
+          pr_body: ":crown: *An automated PR*"
+          pr_reviewer: "korti11"
+          pr_assignee: "korti11"
+          pr_label: "auto-pr"
+          github_token: ${{secrets.GITHUB_TOKEN}}

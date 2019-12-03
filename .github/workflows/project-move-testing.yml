@@ -1,0 +1,17 @@
+name: Project board move to In testing
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  move-to-testing:
+    name: "Move project card to in testing"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: alex-page/github-project-automation-plus@v0.1.1
+        if: github.event.label.name == 'testing'
+        with:
+          project: Backlog
+          column: In testing
+          repo-token: ${{secrets.GH_PAT}}

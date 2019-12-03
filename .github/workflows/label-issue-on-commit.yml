@@ -1,0 +1,14 @@
+name: Add testing label on issue
+
+on: push
+
+jobs:
+  add-testing-label:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: korti11/commit-issue-labeler@v0.1
+        with:
+          label: testing
+          trigger: ready for testing
+        env:
+          GITHUB_TOKEN: ${{secrets.GH_PAT}}
