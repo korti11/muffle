@@ -48,6 +48,8 @@ class MainActivityEspressoTest {
     }
 
     @Test fun onClickEdit() {
+        onView(withId(R.id.muffleCards)).
+            perform(RecyclerViewActions.scrollToPosition<MuffleCardAdapter.MuffleCardHolder>(1))
         onView(allOf(withId(R.id.editButton), isDescendantOfA(withChild(withText("Home")))))
             .perform(click())
         onView(withText("Edit button pressed."))
