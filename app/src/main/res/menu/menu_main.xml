@@ -3,6 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="io.korti.muffle.MainActivity">
     <item
+        android:id="@+id/action_sync"
+        android:orderInCategory="99"
+        android:title="@string/action_sync"
+        app:showAsAction="never"/>
+    <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:title="@string/action_settings"
