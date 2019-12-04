@@ -5,19 +5,36 @@ import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.LinearLayout
+import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import io.korti.muffle.adapter.MuffleCardAdapter
 
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.content_main.*
 
 class MainActivity : AppCompatActivity() {
+
+    private val muffleCardAdapter = MuffleCardAdapter()
+    private lateinit var muffleCardLayout: RecyclerView.LayoutManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+        muffleCardLayout = LinearLayoutManager(this)
+
+        muffleCards.apply {
+            setHasFixedSize(true)
+            layoutManager = muffleCardLayout
+            adapter = muffleCardAdapter
+        }
+
+        fab.setOnClickListener {
+            Toast.makeText(this, "Open AddMufflePointActivity.", Toast.LENGTH_SHORT)
+                .show()
         }
     }
 
@@ -32,7 +49,14 @@ class MainActivity : AppCompatActivity() {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings -> true
+            R.id.action_sync -> {
+                Toast.makeText(this, "Sync with firebase.", Toast.LENGTH_SHORT).show()
+                true
+            }
+            R.id.action_settings -> {
+                Toast.makeText(this, "Open SettingsActivity.", Toast.LENGTH_SHORT).show()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
