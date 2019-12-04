@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Muffle</string>
     <string name="action_settings">Settings</string>
+    <string name="muffle_status">Status: %s</string>
+    <string name="btn_enable">Enable</string>
+    <string name="btn_disable">Disable</string>
+    <string name="btn_edit">Edit</string>
 </resources>

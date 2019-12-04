@@ -2,7 +2,11 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent" android:layout_height="300dp"
+    android:layout_width="match_parent"
+    android:layout_height="250dp"
+    android:layout_marginLeft="8dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginRight="8dp"
     card_view:cardCornerRadius="8dp"
     card_view:cardElevation="8dp">
 
@@ -11,7 +15,7 @@
         android:layout_height="match_parent">
 
         <ImageView
-            android:id="@+id/imageView2"
+            android:id="@+id/mapsImage"
             android:layout_width="0dp"
             android:layout_height="0dp"
             card_view:layout_constraintBottom_toTopOf="@+id/centerGuideline"
@@ -29,27 +33,29 @@
 
         <TextView
             android:id="@+id/muffleName"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
             android:layout_marginTop="16dp"
-            android:text="JKU Universität"
+            android:layout_marginEnd="24dp"
+            android:text="@android:string/untitled"
             android:textColor="@android:color/black"
             android:textSize="30sp"
             android:textStyle="bold"
             card_view:layout_constraintEnd_toEndOf="parent"
-            card_view:layout_constraintHorizontal_bias="0.1"
             card_view:layout_constraintStart_toStartOf="parent"
             card_view:layout_constraintTop_toTopOf="@+id/centerGuideline" />
 
         <TextView
             android:id="@+id/muffleStatus"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Status: Not active"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:text="@string/muffle_status"
             android:textColor="@android:color/black"
             card_view:layout_constraintBottom_toTopOf="@+id/buttonGuideline"
             card_view:layout_constraintEnd_toEndOf="parent"
-            card_view:layout_constraintHorizontal_bias="0.07"
             card_view:layout_constraintStart_toStartOf="parent"
             card_view:layout_constraintTop_toBottomOf="@+id/muffleName" />
 
@@ -65,8 +71,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="Disable"
             android:background="?attr/selectableItemBackground"
+            android:text="@string/btn_disable"
             android:textColor="@color/colorAccent"
             card_view:layout_constraintBottom_toBottomOf="parent"
             card_view:layout_constraintStart_toStartOf="parent"
@@ -77,8 +83,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="Edit"
             android:background="?attr/selectableItemBackground"
+            android:text="@string/btn_edit"
             android:textColor="@color/colorAccent"
             card_view:layout_constraintBottom_toBottomOf="parent"
             card_view:layout_constraintStart_toEndOf="@+id/edButton"
