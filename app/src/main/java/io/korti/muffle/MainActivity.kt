@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.korti.muffle.adapter.MuffleCardAdapter
@@ -31,9 +32,9 @@ class MainActivity : AppCompatActivity() {
             adapter = muffleCardAdapter
         }
 
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+        fab.setOnClickListener {
+            Toast.makeText(this, "Open AddMufflePointActivity.", Toast.LENGTH_SHORT)
+                .show()
         }
     }
 
