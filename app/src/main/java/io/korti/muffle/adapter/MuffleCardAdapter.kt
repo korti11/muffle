@@ -15,8 +15,8 @@ class MuffleCardAdapter : RecyclerView.Adapter<MuffleCardAdapter.MuffleCardHolde
         MufflePoint(0f, 0f, "JKU Universität"),
         MufflePoint(0f, 0f, "Home", active = true),
         MufflePoint(0f, 0f, "Work", enable = false),
-        MufflePoint(0f, 0f, "Cinema")
-        //MufflePoint(0f, 0f, "Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+        MufflePoint(0f, 0f, "Cinema"),
+        MufflePoint(0f, 0f, "Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
     )
 
     /**
