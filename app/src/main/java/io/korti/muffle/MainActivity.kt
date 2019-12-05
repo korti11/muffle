@@ -1,5 +1,6 @@
 package io.korti.muffle
 
+import android.content.Intent
 import android.os.Bundle
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
@@ -33,8 +34,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         fab.setOnClickListener {
-            Toast.makeText(this, "Open AddMufflePointActivity.", Toast.LENGTH_SHORT)
-                .show()
+            Intent(this, AddMufflePointActivity::class.java).also {
+                startActivity(it)
+            }
         }
     }
 
