@@ -1,11 +1,13 @@
 package io.korti.muffle
 
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_add_muffle_point.*
+import kotlinx.android.synthetic.main.content_add_muffle_point.*
 
 class AddMufflePointActivity : AppCompatActivity() {
 
@@ -18,6 +20,9 @@ class AddMufflePointActivity : AppCompatActivity() {
         toolbar.setNavigationOnClickListener {
             this.finish()
         }
+
+        val image = BitmapFactory.decodeResource(resources, R.drawable.map_default)
+        mapsImage.setImageBitmap(image)
     }
 
     /**

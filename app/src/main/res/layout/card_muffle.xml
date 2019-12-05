@@ -18,6 +18,7 @@
             android:id="@+id/mapsImage"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:scaleType="centerCrop"
             card_view:layout_constraintBottom_toTopOf="@+id/centerGuideline"
             card_view:layout_constraintEnd_toEndOf="parent"
             card_view:layout_constraintStart_toStartOf="parent"
