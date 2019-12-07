@@ -1,5 +1,6 @@
 package io.korti.muffle.adapter
 
+import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
@@ -81,6 +82,8 @@ class MuffleCardAdapter : RecyclerView.Adapter<MuffleCardAdapter.MuffleCardHolde
     override fun onBindViewHolder(holder: MuffleCardHolder, position: Int) {
         val mufflePoint = data[position]
         holder.cardView.apply {
+            val image = BitmapFactory.decodeResource(resources, R.drawable.map_default)
+            mapsImage.setImageBitmap(image)
             muffleName.text = mufflePoint.name
             muffleStatus.text = context.getString(R.string.muffle_status, mufflePoint.getStatus())
             edButton.apply {
