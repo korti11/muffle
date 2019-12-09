@@ -107,7 +107,9 @@ class MuffleCardAdapter : RecyclerView.Adapter<MuffleCardAdapter.MuffleCardHolde
                     context.getString(R.string.muffle_status, mufflePoint.getStatus())
             }
             editButton.setOnClickListener {
-                Intent(context, EditMufflePointActivity::class.java).also {
+                Intent(context, EditMufflePointActivity::class.java).apply {
+                    putExtra(EditMufflePointActivity.MUFFLE_POINT_EXTRA, mufflePoint)
+                }.also {
                     context.startActivity(it)
                 }
             }
