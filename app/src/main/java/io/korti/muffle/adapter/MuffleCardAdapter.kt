@@ -1,11 +1,12 @@
 package io.korti.muffle.adapter
 
+import android.content.Intent
 import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
+import io.korti.muffle.EditMufflePointActivity
 import io.korti.muffle.R
 import io.korti.muffle.entity.MufflePoint
 import kotlinx.android.synthetic.main.card_muffle.view.*
@@ -106,7 +107,9 @@ class MuffleCardAdapter : RecyclerView.Adapter<MuffleCardAdapter.MuffleCardHolde
                     context.getString(R.string.muffle_status, mufflePoint.getStatus())
             }
             editButton.setOnClickListener {
-                Toast.makeText(context, "Edit button pressed.", Toast.LENGTH_SHORT).show()
+                Intent(context, EditMufflePointActivity::class.java).also {
+                    context.startActivity(it)
+                }
             }
         }
     }

@@ -14,4 +14,7 @@
     <string name="label_notifications">Notifications</string>
     <string name="label_alarm">Alarm</string>
     <string name="action_save">Save</string>
+    <string name="title_activity_edit_muffle_point">Edit</string>
+    <string name="label_enable">Enable</string>
+    <string name="btn_delete">Delete</string>
 </resources>

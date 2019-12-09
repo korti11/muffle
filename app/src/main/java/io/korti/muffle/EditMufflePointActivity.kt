@@ -6,15 +6,16 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_add_muffle_point.*
+import kotlinx.android.synthetic.main.activity_edit_muffle_point.*
 import kotlinx.android.synthetic.main.content_add_muffle_point.*
 
-class AddMufflePointActivity : AppCompatActivity() {
+class EditMufflePointActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add_muffle_point)
+        setContentView(R.layout.activity_edit_muffle_point)
         setSupportActionBar(toolbar)
+
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
         toolbar.setNavigationOnClickListener {
@@ -85,7 +86,7 @@ class AddMufflePointActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_save -> {
-                Toast.makeText(this, "New muffle point added.", Toast.LENGTH_SHORT)
+                Toast.makeText(this, "Edited muffle point saved.", Toast.LENGTH_SHORT)
                     .show()
                 this.finish()
                 true
