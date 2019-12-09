@@ -50,10 +50,10 @@ class MainActivityEspressoTest {
             perform(RecyclerViewActions.scrollToPosition<MuffleCardAdapter.MuffleCardHolder>(1))
         onView(allOf(withId(R.id.editButton), isDescendantOfA(withChild(withText("Home")))))
             .perform(click())
-        onView(withText("Edit button pressed."))
-            .inRoot(withDecorView(not(`is`(activityRule.activity.window.decorView))))
+        onView(withText(R.string.title_activity_edit_muffle_point))
             .check(matches(isDisplayed()))
-        Thread.sleep(200) // Not good but easier then idle resources for just waiting that a toast disappear
+        onView(withId(R.id.muffleName))
+            .check(matches(withText("Home")))
     }
 
     @Test fun onClickFAB() {

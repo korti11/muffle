@@ -4,17 +4,24 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_add_muffle_point.*
-import kotlinx.android.synthetic.main.content_add_muffle_point.*
+import io.korti.muffle.entity.MufflePoint
+import kotlinx.android.synthetic.main.activity_edit_muffle_point.*
+import kotlinx.android.synthetic.main.content_edit_muffle_point.*
 
-class AddMufflePointActivity : AppCompatActivity() {
+class EditMufflePointActivity : AppCompatActivity() {
+
+    companion object {
+        val MUFFLE_POINT_EXTRA = "MUFFLE_POINT_EXTRA"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add_muffle_point)
+        setContentView(R.layout.activity_edit_muffle_point)
         setSupportActionBar(toolbar)
+
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
         toolbar.setNavigationOnClickListener {
@@ -23,6 +30,15 @@ class AddMufflePointActivity : AppCompatActivity() {
 
         val image = BitmapFactory.decodeResource(resources, R.drawable.map_default)
         mapsImage.setImageBitmap(image)
+
+        val mufflePoint: MufflePoint? = intent.extras?.getParcelable(
+            MUFFLE_POINT_EXTRA
+        )
+
+        if(mufflePoint != null) {
+            enableSwitch.isChecked = mufflePoint.enable
+            muffleName.setText(mufflePoint.name, TextView.BufferType.EDITABLE)
+        }
     }
 
     /**
@@ -85,7 +101,7 @@ class AddMufflePointActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_save -> {
-                Toast.makeText(this, "New muffle point added.", Toast.LENGTH_SHORT)
+                Toast.makeText(this, "Edited muffle point saved.", Toast.LENGTH_SHORT)
                     .show()
                 this.finish()
                 true
