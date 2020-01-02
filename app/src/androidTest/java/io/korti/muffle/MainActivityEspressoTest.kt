@@ -1,5 +1,7 @@
 package io.korti.muffle
 
+import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
+import android.Manifest.permission.ACCESS_FINE_LOCATION
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
 import androidx.test.espresso.action.ViewActions.click
@@ -10,6 +12,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.rule.ActivityTestRule
+import androidx.test.rule.GrantPermissionRule
 import io.korti.muffle.adapter.MuffleCardAdapter
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.not
@@ -24,6 +27,12 @@ class MainActivityEspressoTest {
 
     @get:Rule
     val activityRule = ActivityTestRule(MainActivity::class.java)
+
+    @get:Rule
+    val permissionRule = GrantPermissionRule.grant(
+        ACCESS_FINE_LOCATION,
+        ACCESS_BACKGROUND_LOCATION
+    )
 
     @Test fun disableMufflePoint() {
         onView(withId(R.id.muffleCards)).
