@@ -1,5 +1,6 @@
 package io.korti.muffle
 
+import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.app.PendingIntent
 import android.content.Intent
@@ -156,7 +157,7 @@ class MainActivity : AppCompatActivity() {
             if(ActivityCompat.shouldShowRequestPermissionRationale
                     (this, ACCESS_FINE_LOCATION).not()){
                 ActivityCompat.requestPermissions(this,
-                    arrayOf(ACCESS_FINE_LOCATION),
+                    arrayOf(ACCESS_FINE_LOCATION, ACCESS_BACKGROUND_LOCATION),
                     LOCATION_PERMISSION_REQUEST)
             }
         }
