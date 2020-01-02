@@ -1,34 +1,37 @@
 package io.korti.muffle
 
-import android.content.Intent
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_add_muffle_point.*
-import kotlinx.android.synthetic.main.content_add_muffle_point.*
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.SupportMapFragment
+import kotlinx.android.synthetic.main.activity_select_muffle_point.*
 
-class AddMufflePointActivity : AppCompatActivity() {
+class SelectMufflePointActivity : AppCompatActivity() {
+
+    private lateinit var map: GoogleMap
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add_muffle_point)
+        setContentView(R.layout.activity_select_muffle_point)
         setSupportActionBar(toolbar)
+
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
         toolbar.setNavigationOnClickListener {
             this.finish()
         }
 
-        val image = BitmapFactory.decodeResource(resources, R.drawable.map_default)
-        mapsImage.setImageBitmap(image)
+        fab.setOnClickListener { view ->
+            Toast.makeText(this, "Show current location.", Toast.LENGTH_SHORT).show()
+        }
 
-        mapsImage.setOnClickListener {
-            Intent(this, SelectMufflePointActivity::class.java).also {
-                startActivity(it)
-            }
+        val mapFragment = supportFragmentManager
+            .findFragmentById(R.id.googleMap) as SupportMapFragment
+        mapFragment.getMapAsync {
+            map = it
         }
     }
 
@@ -66,7 +69,7 @@ class AddMufflePointActivity : AppCompatActivity() {
      * @see .onOptionsItemSelected
      */
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_add_edit_muffle_point, menu)
+        menuInflater.inflate(R.menu.menu_select_muffle_point, menu)
         return true
     }
 
@@ -92,7 +95,7 @@ class AddMufflePointActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_save -> {
-                Toast.makeText(this, "New muffle point added.", Toast.LENGTH_SHORT)
+                Toast.makeText(this, "Position selected.", Toast.LENGTH_SHORT)
                     .show()
                 this.finish()
                 true
@@ -100,4 +103,5 @@ class AddMufflePointActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
 }

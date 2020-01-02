@@ -9,10 +9,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
+
+        <activity
+            android:name=".SelectMufflePointActivity"
+            android:label="@string/title_activity_select_muffle_point"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".EditMufflePointActivity"
             android:label="@string/title_activity_edit_muffle_point"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".AddMufflePointActivity"
             android:label="@string/title_activity_add_muffle_point"

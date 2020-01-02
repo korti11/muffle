@@ -17,4 +17,6 @@
     <string name="title_activity_edit_muffle_point">Edit</string>
     <string name="label_enable">Enable</string>
     <string name="btn_delete">Delete</string>
+    <string name="title_activity_select_muffle_point">Select point</string>
+    <string name="hint_search">Search on map…</string>
 </resources>
