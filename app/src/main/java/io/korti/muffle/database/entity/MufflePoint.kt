@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "muffle_point")
-class MufflePoint(
+data class MufflePoint(
     @PrimaryKey val uid: String,
     @ColumnInfo(name = "latitude") val lat: Float = 0.0F,
     @ColumnInfo(name = "longitude") val lng: Float = 0.0F,

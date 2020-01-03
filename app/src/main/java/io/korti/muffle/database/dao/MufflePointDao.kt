@@ -13,7 +13,7 @@ interface MufflePointDao {
     fun getById(mufflePointId: String): MufflePoint
 
     @Query("SELECT * FROM muffle_point LIMIT :limit OFFSET :offset")
-    fun loadLimit(limit: Int, offset: Int): List<MufflePoint>
+    fun loadLimit(limit: Int, offset: Int = 0): List<MufflePoint>
 
     @Insert
     fun insertAll(vararg mufflePoints: MufflePoint)
