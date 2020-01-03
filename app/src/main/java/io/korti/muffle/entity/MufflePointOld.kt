@@ -3,8 +3,9 @@ package io.korti.muffle.entity
 import android.os.Parcel
 import android.os.Parcelable
 
-data class MufflePoint(val lat: Float, val lng: Float, val name: String, var enable: Boolean = true,
-                       var active: Boolean = false) : Parcelable {
+@Deprecated(message = "Is obsolete. Should only be used for UI currently until the view models are ready.")
+data class MufflePointOld(val lat: Float, val lng: Float, val name: String, var enable: Boolean = true,
+                          var active: Boolean = false) : Parcelable {
 
     constructor(parcel: Parcel) : this(
         parcel.readFloat(),
@@ -40,12 +41,12 @@ data class MufflePoint(val lat: Float, val lng: Float, val name: String, var ena
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<MufflePoint> {
-        override fun createFromParcel(parcel: Parcel): MufflePoint {
-            return MufflePoint(parcel)
+    companion object CREATOR : Parcelable.Creator<MufflePointOld> {
+        override fun createFromParcel(parcel: Parcel): MufflePointOld {
+            return MufflePointOld(parcel)
         }
 
-        override fun newArray(size: Int): Array<MufflePoint?> {
+        override fun newArray(size: Int): Array<MufflePointOld?> {
             return arrayOfNulls(size)
         }
     }

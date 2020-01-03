@@ -8,17 +8,17 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import io.korti.muffle.EditMufflePointActivity
 import io.korti.muffle.R
-import io.korti.muffle.entity.MufflePoint
+import io.korti.muffle.entity.MufflePointOld
 import kotlinx.android.synthetic.main.card_muffle.view.*
 
 class MuffleCardAdapter : RecyclerView.Adapter<MuffleCardAdapter.MuffleCardHolder>() {
 
     private val data = listOf(
-        MufflePoint(0f, 0f, "JKU Universität"),
-        MufflePoint(0f, 0f, "Home", active = true),
-        MufflePoint(0f, 0f, "Work", enable = false),
-        MufflePoint(0f, 0f, "Cinema"),
-        MufflePoint(0f, 0f, "Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+        MufflePointOld(0f, 0f, "JKU Universität"),
+        MufflePointOld(0f, 0f, "Home", active = true),
+        MufflePointOld(0f, 0f, "Work", enable = false),
+        MufflePointOld(0f, 0f, "Cinema"),
+        MufflePointOld(0f, 0f, "Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
     )
 
     /**
