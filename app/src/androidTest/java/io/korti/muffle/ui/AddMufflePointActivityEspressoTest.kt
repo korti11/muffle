@@ -1,4 +1,4 @@
-package io.korti.muffle
+package io.korti.muffle.ui
 
 import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
@@ -11,6 +11,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.rule.ActivityTestRule
 import androidx.test.rule.GrantPermissionRule
+import io.korti.muffle.MainActivity
+import io.korti.muffle.R
 import org.hamcrest.Matchers
 import org.junit.Rule
 import org.junit.Test
