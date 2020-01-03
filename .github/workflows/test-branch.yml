@@ -165,6 +165,7 @@ jobs:
         with:
           api-level: 29
           script: ./gradlew connectedCheck
+          target: google_apis
   pull-request-on-feature-branch:
     name: Pull request from feature branch to master branch
     needs: [run-unit-tests, run-integration-tests, get-branch-name]
