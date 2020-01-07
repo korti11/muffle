@@ -52,46 +52,6 @@ class DatabaseInstrumentTest {
 
     @Test
     @Throws(Exception::class)
-    fun writeAndReadLimitedMultipleMufflePoints() {
-        val mufflePoints = (1..5).map {
-            MufflePoint(
-                uid = "test-$it",
-                name = "Test $it",
-                image = ""
-            )
-        }.toTypedArray()
-        mufflePointDao.insertAll(*mufflePoints)
-        val limitedSearch = mufflePointDao.loadLimit(2)
-        assertThat("Got too few or too much muffle points.", limitedSearch.size, equalTo(2))
-        assertThat(
-            "Got not the right muffle points back.",
-            limitedSearch,
-            equalTo(mufflePoints.slice(0..1))
-        )
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun writeAndReadLimitedOffsetMultipleMufflePoints() {
-        val mufflePoints = (1..5).map {
-            MufflePoint(
-                uid = "test-$it",
-                name = "Test $it",
-                image = ""
-            )
-        }.toTypedArray()
-        mufflePointDao.insertAll(*mufflePoints)
-        val limitedOffsetSearch = mufflePointDao.loadLimit(2, 1)
-        assertThat("Got too few or too much muffle points.", limitedOffsetSearch.size, equalTo(2))
-        assertThat(
-            "Got not the right muffle points back",
-            limitedOffsetSearch,
-            equalTo(mufflePoints.slice(1..2))
-        )
-    }
-
-    @Test
-    @Throws(Exception::class)
     fun writeReadAndDeleteMufflePoint() {
         val mufflePoint = MufflePoint(
             uid = "test-1",
