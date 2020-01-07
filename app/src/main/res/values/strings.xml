@@ -27,4 +27,7 @@
     <string name="geofence_transition_dwell">dwell</string>
     <string name="geofence_transition_exit">exit</string>
     <string name="geofence_transition_unknown">unknown</string>
+    <string name="muffle_point_status_disabled">Disabled</string>
+    <string name="muffle_point_status_active">Active</string>
+    <string name="muffle_point_status_not_active">Not active</string>
 </resources>

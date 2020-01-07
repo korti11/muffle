@@ -1,25 +1,79 @@
 package io.korti.muffle.adapter
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.cardview.widget.CardView
+import androidx.paging.PagedListAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import io.korti.muffle.EditMufflePointActivity
 import io.korti.muffle.R
-import io.korti.muffle.entity.MufflePointOld
+import io.korti.muffle.database.entity.MufflePoint
 import kotlinx.android.synthetic.main.card_muffle.view.*
 
-class MuffleCardAdapter : RecyclerView.Adapter<MuffleCardAdapter.MuffleCardHolder>() {
+class MuffleCardAdapter : PagedListAdapter<MufflePoint, MuffleCardAdapter.MuffleCardHolder>(
+    DIFF_CALLBACK) {
 
-    private val data = listOf(
-        MufflePointOld(0f, 0f, "JKU Universität"),
-        MufflePointOld(0f, 0f, "Home", active = true),
-        MufflePointOld(0f, 0f, "Work", enable = false),
-        MufflePointOld(0f, 0f, "Cinema"),
-        MufflePointOld(0f, 0f, "Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-    )
+    companion object {
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<MufflePoint>() {
+            /**
+             * Called to check whether two objects represent the same item.
+             *
+             *
+             * For example, if your items have unique ids, this method should check their id equality.
+             *
+             *
+             * Note: `null` items in the list are assumed to be the same as another `null`
+             * item and are assumed to not be the same as a non-`null` item. This callback will
+             * not be invoked for either of those cases.
+             *
+             * @param oldItem The item in the old list.
+             * @param newItem The item in the new list.
+             * @return True if the two items represent the same object or false if they are different.
+             *
+             * @see Callback.areItemsTheSame
+             */
+            override fun areItemsTheSame(oldItem: MufflePoint, newItem: MufflePoint): Boolean {
+                return oldItem.uid == newItem.uid
+            }
+
+            /**
+             * Called to check whether two items have the same data.
+             *
+             *
+             * This information is used to detect if the contents of an item have changed.
+             *
+             *
+             * This method to check equality instead of [Object.equals] so that you can
+             * change its behavior depending on your UI.
+             *
+             *
+             * For example, if you are using DiffUtil with a
+             * [RecyclerView.Adapter], you should
+             * return whether the items' visual representations are the same.
+             *
+             *
+             * This method is called only if [.areItemsTheSame] returns `true` for
+             * these items.
+             *
+             *
+             * Note: Two `null` items are assumed to represent the same contents. This callback
+             * will not be invoked for this case.
+             *
+             * @param oldItem The item in the old list.
+             * @param newItem The item in the new list.
+             * @return True if the contents of the items are the same or false if they are different.
+             *
+             * @see Callback.areContentsTheSame
+             */
+            override fun areContentsTheSame(oldItem: MufflePoint, newItem: MufflePoint): Boolean {
+                return oldItem == newItem
+            }
+        }
+    }
 
     /**
      * Called when RecyclerView needs a new [ViewHolder] of the given type to represent
@@ -51,15 +105,6 @@ class MuffleCardAdapter : RecyclerView.Adapter<MuffleCardAdapter.MuffleCardHolde
     }
 
     /**
-     * Returns the total number of items in the data set held by the adapter.
-     *
-     * @return The total number of items in this adapter.
-     */
-    override fun getItemCount(): Int {
-        return data.size
-    }
-
-    /**
      * Called by RecyclerView to display the data at the specified position. This method should
      * update the contents of the [ViewHolder.itemView] to reflect the item at the given
      * position.
@@ -81,37 +126,55 @@ class MuffleCardAdapter : RecyclerView.Adapter<MuffleCardAdapter.MuffleCardHolde
      * @param position The position of the item within the adapter's data set.
      */
     override fun onBindViewHolder(holder: MuffleCardHolder, position: Int) {
-        val mufflePoint = data[position]
-        holder.cardView.apply {
-            val image = BitmapFactory.decodeResource(resources, R.drawable.map_default)
-            mapsImage.setImageBitmap(image)
-            muffleName.text = mufflePoint.name
-            muffleStatus.text = context.getString(R.string.muffle_status, mufflePoint.getStatus())
-            edButton.apply {
-                text = if (mufflePoint.enable) {
-                    context.getString(R.string.btn_disable)
-                } else {
-                    context.getString(R.string.btn_enable)
-                }
-            }
-
-            edButton.setOnClickListener {
-                if (mufflePoint.enable) {
-                    mufflePoint.enable = false
-                    edButton.text = context.getString(R.string.btn_enable)
-                } else {
-                    mufflePoint.enable = true
-                    edButton.text = context.getString(R.string.btn_disable)
-                }
+        val mufflePoint = getItem(position)
+        if(mufflePoint != null) {
+            holder.cardView.apply {
+                val image = BitmapFactory.decodeResource(resources, R.drawable.map_default)
+                mapsImage.setImageBitmap(image)
+                muffleName.text = mufflePoint.name
                 muffleStatus.text =
-                    context.getString(R.string.muffle_status, mufflePoint.getStatus())
-            }
-            editButton.setOnClickListener {
-                Intent(context, EditMufflePointActivity::class.java).apply {
-                    putExtra(EditMufflePointActivity.MUFFLE_POINT_EXTRA, mufflePoint)
-                }.also {
-                    context.startActivity(it)
+                    context.getString(R.string.muffle_status, getStatus(context, mufflePoint))
+
+                edButton.apply {
+                    text = if (mufflePoint.enable) {
+                        context.getString(R.string.btn_disable)
+                    } else {
+                        context.getString(R.string.btn_enable)
+                    }
                 }
+
+                edButton.setOnClickListener {
+                    if (mufflePoint.enable) {
+                        mufflePoint.enable = false
+                        edButton.text = context.getString(R.string.btn_enable)
+                    } else {
+                        mufflePoint.enable = true
+                        edButton.text = context.getString(R.string.btn_disable)
+                    }
+                    muffleStatus.text =
+                        context.getString(R.string.muffle_status, getStatus(context, mufflePoint))
+                }
+                editButton.setOnClickListener {
+                    Intent(context, EditMufflePointActivity::class.java).apply {
+                        putExtra(EditMufflePointActivity.MUFFLE_POINT_EXTRA, mufflePoint.uid)
+                    }.also {
+                        context.startActivity(it)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun getStatus(context: Context, mufflePoint: MufflePoint): String {
+        return when {
+            mufflePoint.enable.not() -> {
+                context.getString(R.string.muffle_point_status_disabled)
+            }
+            mufflePoint.active -> {
+                context.getString(R.string.muffle_point_status_active)
+            }
+            else -> {
+                context.getString(R.string.muffle_point_status_not_active)
             }
         }
     }

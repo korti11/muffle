@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.location.Geofence
@@ -21,8 +22,10 @@ import com.google.android.gms.location.GeofencingRequest
 import com.google.android.gms.location.LocationServices
 import io.korti.muffle.adapter.MuffleCardAdapter
 import io.korti.muffle.location.GeofenceBroadcastReceiver
+import io.korti.muffle.viewmodel.MainActivityViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
 
@@ -30,6 +33,9 @@ class MainActivity : AppCompatActivity() {
         private val TAG = MainActivity::class.java.simpleName
         private const val LOCATION_PERMISSION_REQUEST = 1
     }
+
+    @Inject
+    lateinit var mainViewModel: MainActivityViewModel
 
     private val geofenceList = emptyList<Geofence>().toMutableList()
     private val muffleCardAdapter = MuffleCardAdapter()
@@ -42,12 +48,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        (applicationContext as MuffleApplication).appComponent.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
         checkPermissions()
 
+        mainViewModel.getMufflePoints().observe(this, Observer(muffleCardAdapter::submitList))
         muffleCardLayout = LinearLayoutManager(this)
         geofencingClient = LocationServices.getGeofencingClient(this)
 
