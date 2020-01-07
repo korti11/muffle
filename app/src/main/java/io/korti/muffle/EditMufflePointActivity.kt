@@ -4,10 +4,8 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import io.korti.muffle.entity.MufflePointOld
 import kotlinx.android.synthetic.main.activity_edit_muffle_point.*
 import kotlinx.android.synthetic.main.content_edit_muffle_point.*
 
@@ -31,14 +29,7 @@ class EditMufflePointActivity : AppCompatActivity() {
         val image = BitmapFactory.decodeResource(resources, R.drawable.map_default)
         mapsImage.setImageBitmap(image)
 
-        val mufflePointOld: MufflePointOld? = intent.extras?.getParcelable(
-            MUFFLE_POINT_EXTRA
-        )
-
-        if(mufflePointOld != null) {
-            enableSwitch.isChecked = mufflePointOld.enable
-            muffleName.setText(mufflePointOld.name, TextView.BufferType.EDITABLE)
-        }
+        val mufflePointId = intent.extras?.getString(MUFFLE_POINT_EXTRA)
     }
 
     /**
