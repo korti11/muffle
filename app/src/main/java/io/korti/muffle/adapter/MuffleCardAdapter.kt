@@ -10,6 +10,7 @@ import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import io.korti.muffle.EditMufflePointActivity
+import io.korti.muffle.MainActivity
 import io.korti.muffle.R
 import io.korti.muffle.database.entity.MufflePoint
 import kotlinx.android.synthetic.main.card_muffle.view.*
@@ -128,31 +129,26 @@ class MuffleCardAdapter : PagedListAdapter<MufflePoint, MuffleCardAdapter.Muffle
     override fun onBindViewHolder(holder: MuffleCardHolder, position: Int) {
         val mufflePoint = getItem(position)
         if(mufflePoint != null) {
-            holder.cardView.apply {
+            holder.bindTo(mufflePoint)
+        }
+    }
+
+    class MuffleCardHolder(private val cardView: CardView) : RecyclerView.ViewHolder(cardView) {
+        fun bindTo(mufflePoint: MufflePoint) {
+            cardView.apply {
                 val image = BitmapFactory.decodeResource(resources, R.drawable.map_default)
                 mapsImage.setImageBitmap(image)
                 muffleName.text = mufflePoint.name
                 muffleStatus.text =
                     context.getString(R.string.muffle_status, getStatus(context, mufflePoint))
-
-                edButton.apply {
-                    text = if (mufflePoint.enable) {
-                        context.getString(R.string.btn_disable)
-                    } else {
-                        context.getString(R.string.btn_enable)
-                    }
+                edButton.text = if (mufflePoint.enable) {
+                    context.getString(R.string.btn_disable)
+                } else {
+                    context.getString(R.string.btn_enable)
                 }
 
                 edButton.setOnClickListener {
-                    if (mufflePoint.enable) {
-                        mufflePoint.enable = false
-                        edButton.text = context.getString(R.string.btn_enable)
-                    } else {
-                        mufflePoint.enable = true
-                        edButton.text = context.getString(R.string.btn_disable)
-                    }
-                    muffleStatus.text =
-                        context.getString(R.string.muffle_status, getStatus(context, mufflePoint))
+                    (context as MainActivity).mainViewModel.changeEnableState(mufflePoint)
                 }
                 editButton.setOnClickListener {
                     Intent(context, EditMufflePointActivity::class.java).apply {
@@ -163,10 +159,8 @@ class MuffleCardAdapter : PagedListAdapter<MufflePoint, MuffleCardAdapter.Muffle
                 }
             }
         }
-    }
 
-    private fun getStatus(context: Context, mufflePoint: MufflePoint): String {
-        return when {
+        private fun getStatus(context: Context, mufflePoint: MufflePoint) = when {
             mufflePoint.enable.not() -> {
                 context.getString(R.string.muffle_point_status_disabled)
             }
@@ -178,7 +172,5 @@ class MuffleCardAdapter : PagedListAdapter<MufflePoint, MuffleCardAdapter.Muffle
             }
         }
     }
-
-    class MuffleCardHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView)
 
 }

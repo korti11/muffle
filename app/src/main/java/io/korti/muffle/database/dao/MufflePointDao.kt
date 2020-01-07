@@ -19,6 +19,9 @@ interface MufflePointDao {
     @Insert
     fun insertAll(vararg mufflePoints: MufflePoint)
 
+    @Query("UPDATE muffle_point SET point_enable = :enable WHERE uid = :mufflePointId")
+    fun updateEnableProperty(mufflePointId: String, enable: Boolean)
+
     @Delete
     fun delete(mufflePoint: MufflePoint)
 
