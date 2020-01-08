@@ -2,6 +2,8 @@ package io.korti.muffle.ui
 
 import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.database.sqlite.SQLiteConstraintException
+import android.util.Log
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -28,6 +30,10 @@ import org.junit.runner.RunWith
 @LargeTest
 class EditMufflePointActivityEspressoTest {
 
+    companion object {
+        val TAG = EditMufflePointActivityEspressoTest::class.java.simpleName
+    }
+
     @get:Rule
     val activityRule = ActivityTestRule(MainActivity::class.java)
 
@@ -39,18 +45,30 @@ class EditMufflePointActivityEspressoTest {
 
     @Before
     fun writeTestData() {
-        val mufflePointDao = MuffleApplication.getDatabase().getMufflePointDao()
-        mufflePointDao.insertAll(
-            MufflePoint("home", name = "Home", image = "", status = MufflePoint.Status.ACTIVE),
-            MufflePoint("work", name = "Work", status = MufflePoint.Status.DISABLED, image = "")
-        )
+        insert(MufflePoint("home", name = "Home", image = "", status = MufflePoint.Status.ACTIVE))
+        insert(MufflePoint("work", name = "Work", status = MufflePoint.Status.DISABLED, image = ""))
+    }
+
+    private fun insert(mufflePoint: MufflePoint) {
+        try {
+            MuffleApplication.getDatabase().getMufflePointDao().insertAll(mufflePoint)
+        } catch (e: SQLiteConstraintException) {
+            Log.i(MainActivityEspressoTest.TAG, "Data for $mufflePoint already written.")
+        }
     }
 
     @After
     fun deleteTestData() {
+        delete("home")
+        delete("work")
+    }
+
+    private fun delete(mufflePointId: String) {
         val mufflePointDao = MuffleApplication.getDatabase().getMufflePointDao()
-        mufflePointDao.delete(mufflePointDao.getById("home"))
-        mufflePointDao.delete(mufflePointDao.getById("work"))
+        val point = mufflePointDao.getById(mufflePointId)
+        if(point != null) {
+            mufflePointDao.delete(point)
+        }
     }
 
     @Test
