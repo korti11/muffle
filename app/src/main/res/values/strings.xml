@@ -30,4 +30,7 @@
     <string name="muffle_point_status_disabled">Disabled</string>
     <string name="muffle_point_status_active">Active</string>
     <string name="muffle_point_status_not_active">Not active</string>
+    <string name="audio_levels_preferences_key">io.korti.muffle.audio.levels</string>
+    <string name="muffle_point_status_in_area">In area</string>
+    <string name="muffle_point_status_unknown">Unknown</string>
 </resources>

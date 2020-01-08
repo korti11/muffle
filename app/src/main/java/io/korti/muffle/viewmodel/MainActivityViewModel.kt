@@ -1,5 +1,6 @@
 package io.korti.muffle.viewmodel
 
+import android.database.sqlite.SQLiteConstraintException
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,6 +18,29 @@ class MainActivityViewModel @Inject constructor(private val mufflePointDao: Muff
     private val mufflePoints: LiveData<PagedList<MufflePoint>> =
         mufflePointDao.getAll().toLiveData(5)
 
+    init {
+        viewModelScope.launch {
+            writeDebugData()
+        }
+    }
+
+    private suspend fun writeDebugData() = withContext(Dispatchers.IO) {
+        try {
+            mufflePointDao.insertAll(
+                MufflePoint(
+                    "jku_universität", 48.336617F, 14.319306F,
+                    name = "JKU Universität", image = "", ringtoneVolume = 1
+                ),
+                MufflePoint(
+                    "home", 48.157500F, 14.338056F,
+                    name = "Home", image = "", ringtoneVolume = 1
+                )
+            )
+        } catch (e: SQLiteConstraintException) {
+            // Just ignore it.
+        }
+    }
+
     fun getMufflePoints(): LiveData<PagedList<MufflePoint>> {
         return mufflePoints
     }
@@ -29,6 +53,12 @@ class MainActivityViewModel @Inject constructor(private val mufflePointDao: Muff
 
     private suspend fun internalChangeEnableState(mufflePoint: MufflePoint) =
         withContext(Dispatchers.IO) {
-            mufflePointDao.updateEnableProperty(mufflePoint.uid, mufflePoint.enable.not())
+            val status = if(mufflePoint.status == MufflePoint.Status.DISABLED) {
+                MufflePoint.Status.ENABLE
+            } else {
+                MufflePoint.Status.DISABLED
+            }
+
+            mufflePointDao.updateStatus(mufflePoint.uid, status)
         }
 }

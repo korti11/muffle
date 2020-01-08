@@ -7,14 +7,11 @@ import androidx.core.app.JobIntentService
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofenceStatusCodes
 import com.google.android.gms.location.GeofencingEvent
-import io.korti.muffle.MuffleApplication
-import io.korti.muffle.MufflePointManager
 import io.korti.muffle.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
-import javax.inject.Inject
 
 class GeofenceTransitionsJobIntentService : JobIntentService() {
 
@@ -29,13 +26,6 @@ class GeofenceTransitionsJobIntentService : JobIntentService() {
 
     private val job = Job()
     private val serviceScope = CoroutineScope(Dispatchers.Default + job)
-
-    @Inject
-    lateinit var mufflePointManager: MufflePointManager
-
-    override fun onCreate() {
-        (applicationContext as MuffleApplication).appComponent.inject(this)
-    }
 
     /**
      * Called serially for each work dispatched to and processed by the service.  This

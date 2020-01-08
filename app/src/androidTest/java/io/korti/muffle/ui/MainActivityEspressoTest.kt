@@ -44,8 +44,8 @@ class MainActivityEspressoTest {
     fun writeTestData() {
         val mufflePointDao = MuffleApplication.getDatabase().getMufflePointDao()
         mufflePointDao.insertAll(
-            MufflePoint("home", name = "Home", image = "", active = true),
-            MufflePoint("work", name = "Work", enable = false, image = "")
+            MufflePoint("home", name = "Home", image = "", status = MufflePoint.Status.ACTIVE),
+            MufflePoint("work", name = "Work", status = MufflePoint.Status.ENABLE, image = "")
         )
     }
 

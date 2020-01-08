@@ -1,6 +1,5 @@
 package io.korti.muffle.adapter
 
-import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.view.LayoutInflater
@@ -140,8 +139,9 @@ class MuffleCardAdapter : PagedListAdapter<MufflePoint, MuffleCardAdapter.Muffle
                 mapsImage.setImageBitmap(image)
                 muffleName.text = mufflePoint.name
                 muffleStatus.text =
-                    context.getString(R.string.muffle_status, getStatus(context, mufflePoint))
-                edButton.text = if (mufflePoint.enable) {
+                    context.getString(R.string.muffle_status,
+                        MufflePoint.Status.getStatus(context, mufflePoint))
+                edButton.text = if (mufflePoint.status > MufflePoint.Status.DISABLED) {
                     context.getString(R.string.btn_disable)
                 } else {
                     context.getString(R.string.btn_enable)
@@ -160,17 +160,7 @@ class MuffleCardAdapter : PagedListAdapter<MufflePoint, MuffleCardAdapter.Muffle
             }
         }
 
-        private fun getStatus(context: Context, mufflePoint: MufflePoint) = when {
-            mufflePoint.enable.not() -> {
-                context.getString(R.string.muffle_point_status_disabled)
-            }
-            mufflePoint.active -> {
-                context.getString(R.string.muffle_point_status_active)
-            }
-            else -> {
-                context.getString(R.string.muffle_point_status_not_active)
-            }
-        }
+
     }
 
 }

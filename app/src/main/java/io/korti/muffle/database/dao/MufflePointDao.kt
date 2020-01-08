@@ -13,14 +13,23 @@ interface MufflePointDao {
     @Query("SELECT * FROM muffle_point WHERE uid = :mufflePointId")
     fun getById(mufflePointId: String): MufflePoint
 
+    @Query("SELECT * FROM muffle_point WHERE point_status = ${MufflePoint.Status.ACTIVE} LIMIT 1")
+    fun getActiveMufflePoint(): MufflePoint?
+
+    @Query("SELECT * FROM muffle_point WHERE point_status = ${MufflePoint.Status.IN_AREA} LIMIT 1")
+    fun getInAreaMufflePoint(): MufflePoint
+
+    @Query("SELECT uid FROM muffle_point WHERE point_status = ${MufflePoint.Status.DISABLED}")
+    fun getDisabled(): List<String>
+
     @Query("SELECT * FROM muffle_point")
     fun getAll(): DataSource.Factory<Int, MufflePoint>
 
     @Insert
     fun insertAll(vararg mufflePoints: MufflePoint)
 
-    @Query("UPDATE muffle_point SET point_enable = :enable WHERE uid = :mufflePointId")
-    fun updateEnableProperty(mufflePointId: String, enable: Boolean)
+    @Query("UPDATE muffle_point SET point_status = :status WHERE uid = :mufflePointId")
+    fun updateStatus(mufflePointId: String, status: Int)
 
     @Delete
     fun delete(mufflePoint: MufflePoint)
