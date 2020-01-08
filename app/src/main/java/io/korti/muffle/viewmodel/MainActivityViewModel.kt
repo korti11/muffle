@@ -1,6 +1,5 @@
 package io.korti.muffle.viewmodel
 
-import android.database.sqlite.SQLiteConstraintException
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,7 +17,7 @@ class MainActivityViewModel @Inject constructor(private val mufflePointDao: Muff
     private val mufflePoints: LiveData<PagedList<MufflePoint>> =
         mufflePointDao.getAll().toLiveData(5)
 
-    init {
+    /*init {
         viewModelScope.launch {
             writeDebugData()
         }
@@ -39,7 +38,7 @@ class MainActivityViewModel @Inject constructor(private val mufflePointDao: Muff
         } catch (e: SQLiteConstraintException) {
             // Just ignore it.
         }
-    }
+    }*/
 
     fun getMufflePoints(): LiveData<PagedList<MufflePoint>> {
         return mufflePoints
