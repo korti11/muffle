@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.location.Geofence
@@ -25,6 +26,9 @@ import io.korti.muffle.location.GeofenceBroadcastReceiver
 import io.korti.muffle.viewmodel.MainActivityViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
@@ -65,26 +69,10 @@ class MainActivity : AppCompatActivity() {
             adapter = muffleCardAdapter
         }
 
-        geofenceList.add(
-            Geofence.Builder()
-                .setRequestId("test-geofence")
-                .setCircularRegion(
-                    48.336617,
-                    14.319306,
-                    100F
-                )
-                .setExpirationDuration(Geofence.NEVER_EXPIRE)
-                .setLoiteringDelay(10)
-                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL or Geofence.GEOFENCE_TRANSITION_EXIT)
-                .build()
-        )
-
-        geofencingClient.addGeofences(getGeofencingRequest(), geofencePendingIntent)?.run {
-            addOnSuccessListener {
-                Log.i(TAG, "Geofences successful added.")
-            }
-            addOnFailureListener {
-                Log.e(TAG, "Geofences not added. ${it.localizedMessage}")
+        lifecycleScope.launch {
+            fillGeofencesList()
+            if(checkPermission(ACCESS_FINE_LOCATION)) {
+                addGeofences()
             }
         }
 
@@ -118,9 +106,9 @@ class MainActivity : AppCompatActivity() {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        when(requestCode) {
+        when (requestCode) {
             LOCATION_PERMISSION_REQUEST -> {
-                if((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED).not()) {
+                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED).not()) {
                     finish()
                 }
             }
@@ -153,20 +141,68 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        geofencingClient.removeGeofences(geofencePendingIntent)
+    private fun checkPermissions() {
+        if (ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale
+                    (this, ACCESS_FINE_LOCATION).not()
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(ACCESS_FINE_LOCATION, ACCESS_BACKGROUND_LOCATION),
+                    LOCATION_PERMISSION_REQUEST
+                )
+            }
+        }
     }
 
-    private fun checkPermissions() {
-        if(ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED) {
+    private fun checkPermission(permission: String): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            permission
+        ) == PackageManager.PERMISSION_GRANTED
+    }
 
-            if(ActivityCompat.shouldShowRequestPermissionRationale
-                    (this, ACCESS_FINE_LOCATION).not()){
-                ActivityCompat.requestPermissions(this,
-                    arrayOf(ACCESS_FINE_LOCATION, ACCESS_BACKGROUND_LOCATION),
-                    LOCATION_PERMISSION_REQUEST)
+    private suspend fun fillGeofencesList() = withContext(Dispatchers.Default) {
+        geofenceList.add(
+            Geofence.Builder()
+                .setRequestId("jku_universität")
+                .setCircularRegion(
+                    48.336617,
+                    14.319306,
+                    100F
+                )
+                .setExpirationDuration(Geofence.NEVER_EXPIRE)
+                .setLoiteringDelay(10000)
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL or Geofence.GEOFENCE_TRANSITION_EXIT)
+                .setNotificationResponsiveness(30000)
+                .build()
+        )
+        geofenceList.add(
+            Geofence.Builder()
+                .setRequestId("home")
+                .setCircularRegion(
+                    48.157500,
+                    14.338056,
+                    1000F
+                )
+                .setExpirationDuration(Geofence.NEVER_EXPIRE)
+                .setLoiteringDelay(10000)
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL or Geofence.GEOFENCE_TRANSITION_EXIT)
+                .setNotificationResponsiveness(30000)
+                .build()
+        )
+    }
+
+    private suspend fun addGeofences() = withContext(Dispatchers.Default) {
+        geofencingClient.addGeofences(getGeofencingRequest(), geofencePendingIntent)?.run {
+            addOnSuccessListener {
+                Log.i(TAG, "Geofences successful added.")
+            }
+            addOnFailureListener {
+                Log.e(TAG, "Geofences not added. ${it.localizedMessage}")
             }
         }
     }

@@ -1,15 +1,22 @@
 package io.korti.muffle
 
 import android.app.Application
+import android.content.Context
 import androidx.room.Room
 import dagger.Component
 import io.korti.muffle.database.AppDatabase
+import io.korti.muffle.location.GeofenceTransitionsJobIntentService
+import io.korti.muffle.module.ContextModule
 import io.korti.muffle.module.DatabaseModule
 
-@Component(modules = [DatabaseModule::class])
+@Component(modules = [DatabaseModule::class, ContextModule::class])
 interface ApplicationComponent {
 
     fun inject(activity: MainActivity)
+
+    fun inject(mufflePointManager: MufflePointManager)
+
+    fun inject(geofenceTransitionsJobIntentService: GeofenceTransitionsJobIntentService)
 
 }
 
@@ -17,9 +24,14 @@ class MuffleApplication : Application() {
 
     companion object {
         private lateinit var database: AppDatabase
+        private lateinit var appContext: Context
 
         fun getDatabase(): AppDatabase {
             return database
+        }
+
+        fun getAppContext(): Context {
+            return appContext
         }
     }
 
@@ -50,7 +62,7 @@ class MuffleApplication : Application() {
         database = Room
             .databaseBuilder(this, AppDatabase::class.java, "muffle-database")
             .build()
-
+        appContext = applicationContext
     }
 
     val appComponent: ApplicationComponent = DaggerApplicationComponent.create()

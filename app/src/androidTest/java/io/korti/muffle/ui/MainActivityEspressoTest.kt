@@ -2,6 +2,8 @@ package io.korti.muffle.ui
 
 import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.database.sqlite.SQLiteConstraintException
+import android.util.Log
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
 import androidx.test.espresso.action.ViewActions.click
@@ -31,6 +33,10 @@ import org.junit.runner.RunWith
 @LargeTest
 class MainActivityEspressoTest {
 
+    companion object {
+        val TAG = MainActivityEspressoTest::class.java.simpleName
+    }
+
     @get:Rule
     val activityRule = ActivityTestRule(MainActivity::class.java)
 
@@ -42,18 +48,30 @@ class MainActivityEspressoTest {
 
     @Before
     fun writeTestData() {
-        val mufflePointDao = MuffleApplication.getDatabase().getMufflePointDao()
-        mufflePointDao.insertAll(
-            MufflePoint("home", name = "Home", image = "", active = true),
-            MufflePoint("work", name = "Work", enable = false, image = "")
-        )
+        insert(MufflePoint("home", name = "Home", image = "", status = MufflePoint.Status.ACTIVE))
+        insert(MufflePoint("work", name = "Work", status = MufflePoint.Status.DISABLED, image = ""))
+    }
+
+    private fun insert(mufflePoint: MufflePoint) {
+        try {
+            MuffleApplication.getDatabase().getMufflePointDao().insertAll(mufflePoint)
+        } catch (e: SQLiteConstraintException) {
+            Log.i(TAG, "Data for $mufflePoint already written.")
+        }
     }
 
     @After
     fun deleteTestData() {
+        delete("home")
+        delete("work")
+    }
+
+    private fun delete(mufflePointId: String) {
         val mufflePointDao = MuffleApplication.getDatabase().getMufflePointDao()
-        mufflePointDao.delete(mufflePointDao.getById("home"))
-        mufflePointDao.delete(mufflePointDao.getById("work"))
+        val point = mufflePointDao.getById(mufflePointId)
+        if(point != null) {
+            mufflePointDao.delete(point)
+        }
     }
 
     @Test fun disableMufflePoint() {

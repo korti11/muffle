@@ -3,11 +3,6 @@ package io.korti.muffle.location
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.util.Log
-import com.google.android.gms.location.Geofence.*
-import com.google.android.gms.location.GeofenceStatusCodes.*
-import com.google.android.gms.location.GeofencingEvent
-import io.korti.muffle.R
 
 class GeofenceBroadcastReceiver : BroadcastReceiver() {
 
@@ -51,55 +46,11 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
      * @param intent The Intent being received.
      */
     override fun onReceive(context: Context?, intent: Intent?) {
-        val geofencingEvent = GeofencingEvent.fromIntent(intent)
-        if (geofencingEvent.hasError()) {
-            val errorMessage = getErrorMessage(context!!, geofencingEvent)
-            Log.e(TAG, errorMessage)
-            return
-        }
-
-        // Get the transition type.
-        val geofenceTransition = geofencingEvent.geofenceTransition
-
-        // Check if the user entered or exited a muffle point
-        if(geofenceTransition == GEOFENCE_TRANSITION_DWELL) {
-
-            // Get the geofences that were triggered. A single event can trigger multiple geofences.
-            val triggeringGeofences = geofencingEvent.triggeringGeofences
-
-            // TODO: Add new active points to the audio manager.
-            // AudioManager.addActivePoints(triggeringGeofences);
-            Log.i(TAG, "Entered following muffle points: $triggeringGeofences")
-
-        } else if(geofenceTransition == GEOFENCE_TRANSITION_EXIT) {
-
-            // Get the geofences that were triggered.
-            val triggeringGeofences = geofencingEvent.triggeringGeofences
-
-            // TODO: Remove active points from the audio manager.
-            // AudioManager.removeActivePoints(triggeringGeofences);
-            Log.i(TAG, "Exited following muffle points: $triggeringGeofences")
-
-        } else {
-            // Log error for invalid geofence transition
-            Log.e(TAG,
-                "Transition ${getTransitionName(context!!, geofenceTransition)} is invalid.")
+        if(context != null && intent != null) {
+            GeofenceTransitionsJobIntentService.enqueueWork(context, intent)
         }
     }
 
-    private fun getErrorMessage(context: Context, geofencingEvent: GeofencingEvent): String
-            = when(geofencingEvent.errorCode) {
-        GEOFENCE_NOT_AVAILABLE -> context.getString(R.string.geofence_not_available)
-        GEOFENCE_TOO_MANY_GEOFENCES -> context.getString(R.string.geofence_too_many_geofences)
-        GEOFENCE_TOO_MANY_PENDING_INTENTS -> context.getString(R.string.geofence_too_many_pending_intents)
-        else -> context.getString(R.string.geofence_unknown_error)
-    }
 
-    private fun getTransitionName(context: Context, transition: Int): String = when(transition) {
-        GEOFENCE_TRANSITION_ENTER -> context.getString(R.string.geofence_transition_enter)
-        GEOFENCE_TRANSITION_DWELL -> context.getString(R.string.geofence_transition_dwell)
-        GEOFENCE_TRANSITION_EXIT -> context.getString(R.string.geofence_transition_exit)
-        else -> context.getString(R.string.geofence_transition_unknown)
-    }
 
 }
