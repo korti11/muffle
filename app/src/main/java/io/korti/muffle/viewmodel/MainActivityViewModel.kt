@@ -1,28 +1,25 @@
 package io.korti.muffle.viewmodel
 
-import android.database.sqlite.SQLiteConstraintException
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagedList
 import androidx.paging.toLiveData
+import io.korti.muffle.MufflePointManager
 import io.korti.muffle.database.dao.MufflePointDao
 import io.korti.muffle.database.entity.MufflePoint
-import io.korti.muffle.location.LocationManager
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class MainActivityViewModel @Inject constructor(
     private val mufflePointDao: MufflePointDao,
-    private val locationManager: LocationManager
+    private val mufflePointManager: MufflePointManager
 ) : ViewModel() {
 
     private val mufflePoints: LiveData<PagedList<MufflePoint>> =
         mufflePointDao.getAllPaged().toLiveData(5)
 
-    init {
+    /*init {
         viewModelScope.launch {
             writeDebugData()
         }
@@ -43,7 +40,7 @@ class MainActivityViewModel @Inject constructor(
         } catch (e: SQLiteConstraintException) {
             // Just ignore it.
         }
-    }
+    }*/
 
     fun getMufflePoints(): LiveData<PagedList<MufflePoint>> {
         return mufflePoints
@@ -51,18 +48,7 @@ class MainActivityViewModel @Inject constructor(
 
     fun changeEnableState(mufflePoint: MufflePoint) {
         viewModelScope.launch {
-            internalChangeEnableState(mufflePoint)
+            mufflePointManager.enableDisableMufflePoint(mufflePoint)
         }
     }
-
-    private suspend fun internalChangeEnableState(mufflePoint: MufflePoint) =
-        withContext(Dispatchers.IO) {
-            val status = if (mufflePoint.status == MufflePoint.Status.DISABLED) {
-                MufflePoint.Status.ENABLE
-            } else {
-                MufflePoint.Status.DISABLED
-            }
-
-            mufflePointDao.updateStatus(mufflePoint.uid, status)
-        }
 }

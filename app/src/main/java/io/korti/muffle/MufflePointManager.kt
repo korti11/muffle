@@ -22,6 +22,18 @@ class MufflePointManager @Inject constructor(
         private const val NOT_ACTIVE_ANYMORE = 2
     }
 
+    suspend fun enableDisableMufflePoint(mufflePoint: MufflePoint) = withContext(Dispatchers.IO) {
+        if(mufflePoint.status >= MufflePoint.Status.ENABLE) {
+            mufflePointDao.updateStatus(mufflePoint.uid, MufflePoint.Status.DISABLED)
+            if(mufflePoint.status == MufflePoint.Status.ACTIVE) {
+                val newActiveArea = mufflePointDao.getInAreaMufflePoint()
+                audioManager.reverseOrUpdateMuffle(newActiveArea)
+            }
+        } else {
+            mufflePointDao.updateStatus(mufflePoint.uid, MufflePoint.Status.ENABLE)
+        }
+    }
+
     suspend fun processLocations(location: Location) = withContext(Dispatchers.Default) {
         // First check is the current active muffle point still valid
         val currentStatus = checkCurrentActiveLocation(location)
