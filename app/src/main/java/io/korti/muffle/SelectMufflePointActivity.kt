@@ -1,5 +1,7 @@
 package io.korti.muffle
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -9,11 +11,16 @@ import androidx.lifecycle.Observer
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.MarkerOptions
 import io.korti.muffle.viewmodel.SelectMufflePointActivityViewModel
 import kotlinx.android.synthetic.main.activity_select_muffle_point.*
 import javax.inject.Inject
 
 class SelectMufflePointActivity : AppCompatActivity() {
+
+    companion object {
+        const val LOCATION_RESULT = "location_result"
+    }
 
     @Inject
     lateinit var selectMufflePointActivityViewModel: SelectMufflePointActivityViewModel
@@ -29,18 +36,21 @@ class SelectMufflePointActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
         toolbar.setNavigationOnClickListener {
+            setResult(Activity.RESULT_CANCELED)
             this.finish()
         }
 
         fab.setOnClickListener { view ->
-            selectMufflePointActivityViewModel.updateCurrentLocation()
+            selectMufflePointActivityViewModel.updateCameraToCurrentLocation()
             Toast.makeText(this, "Show current location.", Toast.LENGTH_SHORT).show()
         }
 
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.googleMap) as SupportMapFragment
+
         mapFragment.getMapAsync {
             map = it
+
             map.moveCamera(
                 CameraUpdateFactory.newLatLngZoom(
                     selectMufflePointActivityViewModel.cameraPosition.value,
@@ -50,7 +60,17 @@ class SelectMufflePointActivity : AppCompatActivity() {
             selectMufflePointActivityViewModel.cameraPosition.observe(this, Observer { pos ->
                 map.moveCamera(CameraUpdateFactory.newLatLng(pos))
             })
+
             map.isMyLocationEnabled = true
+            map.setOnMapClickListener { pos ->
+                selectMufflePointActivityViewModel.updateLocation(
+                    map.addMarker(
+                        MarkerOptions().position(
+                            pos
+                        )
+                    )
+                )
+            }
         }
 
         selectMufflePointActivityViewModel.init()
@@ -118,6 +138,12 @@ class SelectMufflePointActivity : AppCompatActivity() {
             R.id.action_save -> {
                 Toast.makeText(this, "Position selected.", Toast.LENGTH_SHORT)
                     .show()
+                val result = Intent()
+                result.putExtra(
+                    LOCATION_RESULT,
+                    selectMufflePointActivityViewModel.selectedPosition.value?.position
+                )
+                setResult(Activity.RESULT_OK, result)
                 this.finish()
                 true
             }
