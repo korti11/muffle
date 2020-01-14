@@ -1,7 +1,7 @@
 package io.korti.muffle
 
+import android.location.Location
 import android.util.Log
-import com.google.android.gms.location.Geofence
 import io.korti.muffle.audio.AudioManager
 import io.korti.muffle.database.dao.MufflePointDao
 import io.korti.muffle.database.entity.MufflePoint
@@ -16,68 +16,89 @@ class MufflePointManager @Inject constructor(
 
     companion object {
         private val TAG = MufflePointManager::class.java.simpleName
+
+        private const val NO_ACTIVE_POINT = 0
+        private const val STILL_ACTIVE = 1
+        private const val NOT_ACTIVE_ANYMORE = 2
     }
 
-    suspend fun activateMufflePoints(geofences: List<Geofence>) = withContext(Dispatchers.Default) {
-        val activeMufflePoint = activateMufflePointsDatabase(geofences)
-        if(activeMufflePoint != null) {
-            val result = audioManager.muffleSounds(activeMufflePoint)
-            when (result) {
-                AudioManager.MUFFLING_ERROR_CURRENT_VOLUME -> Log.e(
-                    TAG,
-                    "Could not save current audio levels for $activeMufflePoint"
-                )
-                AudioManager.MUFFLING_ERROR_VOLUME_NOT_UPDATED -> Log.wtf(
-                    TAG,
-                    "This should not happened. Why did this happen for $activeMufflePoint"
-                )
-                else -> Log.i(TAG, "Muffled volumes for ${activeMufflePoint.name}")
+    suspend fun processLocations(location: Location) = withContext(Dispatchers.Default) {
+        // First check is the current active muffle point still valid
+        val currentStatus = checkCurrentActiveLocation(location)
+        // Check in area muffle points if they are still in area
+        checkInAreaLocations(location, currentStatus)
+        // Check and update enabled but currently not in area muffle points
+        checkAreaLocations(location)
+    }
+
+    private suspend fun checkCurrentActiveLocation(location: Location): Int =
+        withContext(Dispatchers.IO) {
+            val currentActive = mufflePointDao.getActiveMufflePoint()
+            if (currentActive != null) {
+                val dummyLocation = Location("muffle_application").apply {
+                    longitude = currentActive.lng
+                    latitude = currentActive.lat
+                }
+                if (location.distanceTo(dummyLocation) <= currentActive.radius) {
+                    Log.i(TAG, "Muffle point with id=${currentActive.uid} is still active.")
+                    return@withContext STILL_ACTIVE
+                } else {
+                    Log.i(TAG, "Muffle point with id=${currentActive.uid} is not active anymore.")
+                    mufflePointDao.updateStatus(currentActive.uid, MufflePoint.Status.ENABLE)
+                    return@withContext NOT_ACTIVE_ANYMORE
+                }
+            }
+            NO_ACTIVE_POINT
+        }
+
+    private suspend fun checkInAreaLocations(location: Location, currentStatus: Int) =
+        withContext(Dispatchers.IO) {
+            val dummyLocation = Location("muffle_application")
+            val inAreaPoints = mufflePointDao.getInAreaMufflePoints().groupBy {
+                dummyLocation.longitude = it.lng
+                dummyLocation.latitude = it.lat
+                val distance = location.distanceTo(dummyLocation)
+                Log.d(TAG, "Distance between $location and $dummyLocation is $distance")
+                distance <= it.radius
+            }
+            if (currentStatus == NOT_ACTIVE_ANYMORE) {
+                val newActiveMufflePoint = inAreaPoints[true]?.first()
+                if (newActiveMufflePoint != null) {
+                    mufflePointDao.updateStatus(newActiveMufflePoint.uid, MufflePoint.Status.ACTIVE)
+                    Log.i(
+                        TAG,
+                        "Muffle point with id=${newActiveMufflePoint.uid} changed status from in area to active."
+                    )
+                }
+                audioManager.reverseOrUpdateMuffle(newActiveMufflePoint)
+                Log.i(TAG, "Reversed or updated sound settings.")
+            }
+            inAreaPoints[false]?.forEach {
+                mufflePointDao.updateStatus(it.uid, MufflePoint.Status.ENABLE)
+            }
+        }
+
+    private suspend fun checkAreaLocations(location: Location) = withContext(Dispatchers.IO) {
+        val dummyLocation = Location("muffle_application")
+        val enabledMufflePoints = mufflePointDao.getEnabledMufflePoints().filter {
+            dummyLocation.longitude = it.lng
+            dummyLocation.latitude = it.lat
+            val distance = location.distanceTo(dummyLocation)
+            Log.d(TAG, "Distance between $location and $dummyLocation is $distance")
+            distance <= it.radius
+        }
+        var skipFirst = false
+        if (enabledMufflePoints.isNotEmpty()) {
+            if (mufflePointDao.getActiveMufflePoint() == null) {
+                val newActiveMufflePoint = enabledMufflePoints.first()
+                mufflePointDao.updateStatus(newActiveMufflePoint.uid, MufflePoint.Status.ACTIVE)
+                audioManager.muffleSounds(newActiveMufflePoint)
+                Log.i(TAG, "Muffle point with id=${newActiveMufflePoint.uid} is now active.")
+                skipFirst = true
+            }
+            (if (skipFirst) enabledMufflePoints.drop(1) else enabledMufflePoints).forEach {
+                mufflePointDao.updateStatus(it.uid, MufflePoint.Status.IN_AREA)
             }
         }
     }
-
-    suspend fun deactivateMufflePoints(geofences: List<Geofence>) =
-        withContext(Dispatchers.Default) {
-            val activeMufflePoint = deactivateMufflePointsDatabase(geofences)
-            val result = audioManager.reverseOrUpdateMuffle(activeMufflePoint)
-            when (result) {
-                AudioManager.MUFFLING_ERROR_CURRENT_VOLUME -> Log.e(
-                    TAG,
-                    "Could not load previous saved audio levels."
-                )
-                AudioManager.MUFFLING_ERROR_VOLUME_NOT_UPDATED -> Log.wtf(
-                    TAG,
-                    "This should not have happened. Why did this happen for $activeMufflePoint on updating the sound levels."
-                )
-                else -> Log.i(TAG, "Muffled volumes for ${activeMufflePoint?.name}")
-            }
-        }
-
-    private suspend fun activateMufflePointsDatabase(geofences: List<Geofence>): MufflePoint? =
-        withContext(Dispatchers.IO) {
-            val validPoints = geofences.map(Geofence::getRequestId)
-            val currentActive = mufflePointDao.getActiveMufflePoint() != null
-
-            if(currentActive.not()) {
-                mufflePointDao.updateStatus(validPoints.first(), MufflePoint.Status.ACTIVE)
-            }
-            validPoints.forEach {
-                mufflePointDao.updateStatus(it, MufflePoint.Status.IN_AREA)
-            }
-
-            if(currentActive.not()) {
-                mufflePointDao.getActiveMufflePoint()
-            } else {
-                null
-            }
-        }
-
-    private suspend fun deactivateMufflePointsDatabase(geofences: List<Geofence>): MufflePoint? =
-        withContext(Dispatchers.IO) {
-            geofences.map(Geofence::getRequestId).forEach {
-                mufflePointDao.updateStatus(it, MufflePoint.Status.ENABLE)
-            }
-            mufflePointDao.getInAreaMufflePoint()
-        }
-
 }

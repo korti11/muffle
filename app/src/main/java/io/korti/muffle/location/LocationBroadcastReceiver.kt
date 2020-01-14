@@ -4,9 +4,14 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 
-class GeofenceBroadcastReceiver : BroadcastReceiver() {
+class LocationBroadcastReceiver : BroadcastReceiver() {
 
-    private val TAG = GeofenceBroadcastReceiver::class.java.simpleName
+    companion object {
+        const val ACTION_PROCESS_UPDATES =
+            "io.korti.muffle.action.PROCESS_UPDATES"
+    }
+
+    private val TAG = LocationBroadcastReceiver::class.java.simpleName
 
     /**
      * This method is called when the BroadcastReceiver is receiving an Intent
@@ -47,7 +52,7 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
      */
     override fun onReceive(context: Context?, intent: Intent?) {
         if(context != null && intent != null) {
-            GeofenceTransitionsJobIntentService.enqueueWork(context, intent)
+            LocationTransitionsJobIntentService.enqueueWork(context, intent)
         }
     }
 

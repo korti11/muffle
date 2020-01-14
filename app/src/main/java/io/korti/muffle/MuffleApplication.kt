@@ -5,7 +5,7 @@ import android.content.Context
 import androidx.room.Room
 import dagger.Component
 import io.korti.muffle.database.AppDatabase
-import io.korti.muffle.location.GeofenceTransitionsJobIntentService
+import io.korti.muffle.location.LocationTransitionsJobIntentService
 import io.korti.muffle.module.ContextModule
 import io.korti.muffle.module.DatabaseModule
 
@@ -16,7 +16,7 @@ interface ApplicationComponent {
 
     fun inject(mufflePointManager: MufflePointManager)
 
-    fun inject(geofenceTransitionsJobIntentService: GeofenceTransitionsJobIntentService)
+    fun inject(locationTransitionsJobIntentService: LocationTransitionsJobIntentService)
 
 }
 

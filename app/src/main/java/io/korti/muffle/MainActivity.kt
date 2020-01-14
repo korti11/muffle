@@ -2,11 +2,9 @@ package io.korti.muffle
 
 import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
-import android.app.PendingIntent
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -14,21 +12,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.location.Geofence
-import com.google.android.gms.location.GeofencingClient
-import com.google.android.gms.location.GeofencingRequest
-import com.google.android.gms.location.LocationServices
 import io.korti.muffle.adapter.MuffleCardAdapter
-import io.korti.muffle.location.GeofenceBroadcastReceiver
+import io.korti.muffle.location.LocationManager
 import io.korti.muffle.viewmodel.MainActivityViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
@@ -40,16 +30,11 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var mainViewModel: MainActivityViewModel
+    @Inject
+    lateinit var locationManager: LocationManager
 
-    private val geofenceList = emptyList<Geofence>().toMutableList()
     private val muffleCardAdapter = MuffleCardAdapter()
     private lateinit var muffleCardLayout: RecyclerView.LayoutManager
-    private lateinit var geofencingClient: GeofencingClient
-
-    private val geofencePendingIntent: PendingIntent by lazy {
-        val intent = Intent(this, GeofenceBroadcastReceiver::class.java)
-        PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         (applicationContext as MuffleApplication).appComponent.inject(this)
@@ -59,21 +44,17 @@ class MainActivity : AppCompatActivity() {
 
         checkPermissions()
 
+        if (checkPermission(ACCESS_FINE_LOCATION)) {
+            locationManager.requestLocationUpdates()
+        }
+
         mainViewModel.getMufflePoints().observe(this, Observer(muffleCardAdapter::submitList))
         muffleCardLayout = LinearLayoutManager(this)
-        geofencingClient = LocationServices.getGeofencingClient(this)
 
         muffleCards.apply {
             setHasFixedSize(true)
             layoutManager = muffleCardLayout
             adapter = muffleCardAdapter
-        }
-
-        lifecycleScope.launch {
-            fillGeofencesList()
-            if(checkPermission(ACCESS_FINE_LOCATION)) {
-                addGeofences()
-            }
         }
 
         fab.setOnClickListener {
@@ -110,6 +91,8 @@ class MainActivity : AppCompatActivity() {
             LOCATION_PERMISSION_REQUEST -> {
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED).not()) {
                     finish()
+                } else {
+                    locationManager.requestLocationUpdates()
                 }
             }
             else -> {
@@ -163,54 +146,5 @@ class MainActivity : AppCompatActivity() {
             this,
             permission
         ) == PackageManager.PERMISSION_GRANTED
-    }
-
-    private suspend fun fillGeofencesList() = withContext(Dispatchers.Default) {
-        geofenceList.add(
-            Geofence.Builder()
-                .setRequestId("jku_universität")
-                .setCircularRegion(
-                    48.336617,
-                    14.319306,
-                    100F
-                )
-                .setExpirationDuration(Geofence.NEVER_EXPIRE)
-                .setLoiteringDelay(10000)
-                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL or Geofence.GEOFENCE_TRANSITION_EXIT)
-                .setNotificationResponsiveness(30000)
-                .build()
-        )
-        geofenceList.add(
-            Geofence.Builder()
-                .setRequestId("home")
-                .setCircularRegion(
-                    48.157500,
-                    14.338056,
-                    1000F
-                )
-                .setExpirationDuration(Geofence.NEVER_EXPIRE)
-                .setLoiteringDelay(10000)
-                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL or Geofence.GEOFENCE_TRANSITION_EXIT)
-                .setNotificationResponsiveness(30000)
-                .build()
-        )
-    }
-
-    private suspend fun addGeofences() = withContext(Dispatchers.Default) {
-        geofencingClient.addGeofences(getGeofencingRequest(), geofencePendingIntent)?.run {
-            addOnSuccessListener {
-                Log.i(TAG, "Geofences successful added.")
-            }
-            addOnFailureListener {
-                Log.e(TAG, "Geofences not added. ${it.localizedMessage}")
-            }
-        }
-    }
-
-    private fun getGeofencingRequest(): GeofencingRequest {
-        return GeofencingRequest.Builder().apply {
-            setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_DWELL)
-            addGeofences(geofenceList)
-        }.build()
     }
 }

@@ -1,5 +1,6 @@
 package io.korti.muffle.viewmodel
 
+import android.database.sqlite.SQLiteConstraintException
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,17 +8,21 @@ import androidx.paging.PagedList
 import androidx.paging.toLiveData
 import io.korti.muffle.database.dao.MufflePointDao
 import io.korti.muffle.database.entity.MufflePoint
+import io.korti.muffle.location.LocationManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class MainActivityViewModel @Inject constructor(private val mufflePointDao: MufflePointDao) : ViewModel() {
+class MainActivityViewModel @Inject constructor(
+    private val mufflePointDao: MufflePointDao,
+    private val locationManager: LocationManager
+) : ViewModel() {
 
     private val mufflePoints: LiveData<PagedList<MufflePoint>> =
-        mufflePointDao.getAll().toLiveData(5)
+        mufflePointDao.getAllPaged().toLiveData(5)
 
-    /*init {
+    init {
         viewModelScope.launch {
             writeDebugData()
         }
@@ -27,18 +32,18 @@ class MainActivityViewModel @Inject constructor(private val mufflePointDao: Muff
         try {
             mufflePointDao.insertAll(
                 MufflePoint(
-                    "jku_universität", 48.336617F, 14.319306F,
+                    "jku_universität", 48.336617, 14.319306,
                     name = "JKU Universität", image = "", ringtoneVolume = 1
                 ),
                 MufflePoint(
-                    "home", 48.157500F, 14.338056F,
+                    "home", 48.157500, 14.338056,
                     name = "Home", image = "", ringtoneVolume = 1
                 )
             )
         } catch (e: SQLiteConstraintException) {
             // Just ignore it.
         }
-    }*/
+    }
 
     fun getMufflePoints(): LiveData<PagedList<MufflePoint>> {
         return mufflePoints
@@ -52,7 +57,7 @@ class MainActivityViewModel @Inject constructor(private val mufflePointDao: Muff
 
     private suspend fun internalChangeEnableState(mufflePoint: MufflePoint) =
         withContext(Dispatchers.IO) {
-            val status = if(mufflePoint.status == MufflePoint.Status.DISABLED) {
+            val status = if (mufflePoint.status == MufflePoint.Status.DISABLED) {
                 MufflePoint.Status.ENABLE
             } else {
                 MufflePoint.Status.DISABLED
