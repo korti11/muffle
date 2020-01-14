@@ -5,15 +5,23 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
+import io.korti.muffle.viewmodel.SelectMufflePointActivityViewModel
 import kotlinx.android.synthetic.main.activity_select_muffle_point.*
+import javax.inject.Inject
 
 class SelectMufflePointActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var selectMufflePointActivityViewModel: SelectMufflePointActivityViewModel
 
     private lateinit var map: GoogleMap
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        (applicationContext as MuffleApplication).appComponent.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_select_muffle_point)
         setSupportActionBar(toolbar)
@@ -25,6 +33,7 @@ class SelectMufflePointActivity : AppCompatActivity() {
         }
 
         fab.setOnClickListener { view ->
+            selectMufflePointActivityViewModel.updateCurrentLocation()
             Toast.makeText(this, "Show current location.", Toast.LENGTH_SHORT).show()
         }
 
@@ -32,7 +41,19 @@ class SelectMufflePointActivity : AppCompatActivity() {
             .findFragmentById(R.id.googleMap) as SupportMapFragment
         mapFragment.getMapAsync {
             map = it
+            map.moveCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                    selectMufflePointActivityViewModel.cameraPosition.value,
+                    16.5F
+                )
+            )
+            selectMufflePointActivityViewModel.cameraPosition.observe(this, Observer { pos ->
+                map.moveCamera(CameraUpdateFactory.newLatLng(pos))
+            })
+            map.isMyLocationEnabled = true
         }
+
+        selectMufflePointActivityViewModel.init()
     }
 
     /**
