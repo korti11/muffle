@@ -75,29 +75,31 @@ class MainActivityEspressoTest {
     }
 
     @Test fun disableMufflePoint() {
-        Thread.sleep(200) // TODO: Replace this sometime with idle resources.
+        Thread.sleep(500) // TODO: Replace this sometime with idle resources.
         onView(withId(R.id.muffleCards)).
             perform(RecyclerViewActions.scrollToPosition<MuffleCardAdapter.MuffleCardHolder>(0))
         onView(withChild(withText("Home"))).check(matches(isDisplayed()))
         onView(allOf(withText("Disable"), isDescendantOfA(allOf(withChild(withText("Home")), withChild(
             withText("Status: Active")))))).perform(click())
+        Thread.sleep(500)
         onView(allOf(withId(R.id.muffleStatus), isDescendantOfA(withChild(withText("Home"))))).check(
             matches(withText("Status: Disabled")))
     }
 
     @Test fun enableMufflePoint() {
-        Thread.sleep(200) // TODO: Replace this sometime with idle resources.
+        Thread.sleep(500) // TODO: Replace this sometime with idle resources.
         onView(withId(R.id.muffleCards)).
             perform(RecyclerViewActions.scrollToPosition<MuffleCardAdapter.MuffleCardHolder>(1))
         onView(withChild(withText("Work"))).check(matches(isDisplayed()))
         onView(allOf(withText("Enable"), isDescendantOfA(allOf(withChild(withText("Work")), withChild(
             withText("Status: Disabled")))))).perform(click())
+        Thread.sleep(500)
         onView(allOf(withId(R.id.muffleStatus), isDescendantOfA(withChild(withText("Work"))))).check(
             matches(withText("Status: Not active")))
     }
 
     @Test fun onClickEdit() {
-        Thread.sleep(200) // TODO: Replace this sometime with idle resources.
+        Thread.sleep(500) // TODO: Replace this sometime with idle resources.
         onView(withId(R.id.muffleCards)).
             perform(RecyclerViewActions.scrollToPosition<MuffleCardAdapter.MuffleCardHolder>(0))
         onView(allOf(withId(R.id.editButton), isDescendantOfA(withChild(withText("Home")))))
