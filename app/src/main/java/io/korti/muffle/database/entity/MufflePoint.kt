@@ -9,8 +9,8 @@ import io.korti.muffle.R
 @Entity(tableName = "muffle_point")
 data class MufflePoint(
     @PrimaryKey val uid: String,
-    @ColumnInfo(name = "latitude") var lat: Float = 0.0F,
-    @ColumnInfo(name = "longitude") var lng: Float = 0.0F,
+    @ColumnInfo(name = "latitude") var lat: Double = 0.0,
+    @ColumnInfo(name = "longitude") var lng: Double = 0.0,
     @ColumnInfo(name = "point_radius") var radius: Float = 100F,
     @ColumnInfo(name = "point_name") var name: String,
     @ColumnInfo(name = "point_status") var status: Int = Status.ENABLE,

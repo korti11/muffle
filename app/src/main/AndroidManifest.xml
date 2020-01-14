@@ -20,12 +20,12 @@
             android:value="@string/google_maps_key" />
 
         <receiver
-            android:name=".location.GeofenceBroadcastReceiver"
+            android:name=".location.LocationBroadcastReceiver"
             android:enabled="true"
             android:exported="true"/>
 
         <service
-            android:name=".location.GeofenceTransitionsJobIntentService"
+            android:name=".location.LocationTransitionsJobIntentService"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE"/>
 

@@ -73,7 +73,7 @@ class EditMufflePointActivityEspressoTest {
 
     @Test
     fun onBackButtonPress() {
-        Thread.sleep(200) // TODO: Replace this sometime with idle resources.
+        Thread.sleep(500) // TODO: Replace this sometime with idle resources.
         onView(withId(R.id.muffleCards)).
             perform(scrollToPosition<MuffleCardAdapter.MuffleCardHolder>(0))
         onView(withChild(withText("Home"))).check(matches(isDisplayed()))
@@ -91,7 +91,7 @@ class EditMufflePointActivityEspressoTest {
 
     @Test
     fun onSaveButtonPress() {
-        Thread.sleep(200) // TODO: Replace this sometime with idle resources.
+        Thread.sleep(500) // TODO: Replace this sometime with idle resources.
         onView(withId(R.id.muffleCards)).
             perform(scrollToPosition<MuffleCardAdapter.MuffleCardHolder>(0))
         onView(withChild(withText("Home"))).check(matches(isDisplayed()))
