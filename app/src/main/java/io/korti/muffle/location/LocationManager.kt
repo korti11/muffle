@@ -3,9 +3,13 @@ package io.korti.muffle.location
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.location.Location
 import android.util.Log
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class LocationManager @Inject constructor(val context: Context) {
@@ -37,5 +41,15 @@ class LocationManager @Inject constructor(val context: Context) {
     fun requestLocationUpdates() {
         Log.i(TAG, "Request for location updates")
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationPendingIntent)
+    }
+
+    suspend fun getLastKnownLocation(): Location = withContext(Dispatchers.Default) {
+        if(fusedLocationProviderClient.lastLocation != null) {
+            val location = fusedLocationProviderClient.lastLocation.await()
+            if (location != null) {
+                return@withContext location
+            }
+        }
+        Location("muffle_application")
     }
 }

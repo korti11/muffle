@@ -9,7 +9,7 @@
     tools:showIn="@layout/activity_select_muffle_point">
 
     <EditText
-        android:id="@+id/editText"
+        android:id="@+id/searchText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -19,6 +19,7 @@
         android:elevation="8dp"
         android:ems="10"
         android:hint="@string/hint_search"
+        android:imeOptions="actionSearch"
         android:inputType="textPersonName"
         android:paddingLeft="20dp"
         android:paddingTop="8dp"

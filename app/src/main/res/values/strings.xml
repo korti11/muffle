@@ -19,6 +19,7 @@
     <string name="btn_delete">Delete</string>
     <string name="title_activity_select_muffle_point">Select point</string>
     <string name="hint_search">Search on map…</string>
+    <string name="location_search_url">https://photon.komoot.de/api/?q=%s</string>
     <string name="geofence_not_available">Geofence service is currently not available.</string>
     <string name="geofence_too_many_geofences">You can\'t register more geofences. Max is 100 geofences.</string>
     <string name="geofence_too_many_pending_intents">You have provided too many PendingIntents to the addGeofences() call</string>

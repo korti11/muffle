@@ -5,6 +5,7 @@ import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -14,6 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.maps.SupportMapFragment
 import io.korti.muffle.adapter.MuffleCardAdapter
 import io.korti.muffle.location.LocationManager
 import io.korti.muffle.viewmodel.MainActivityViewModel
@@ -61,6 +63,12 @@ class MainActivity : AppCompatActivity() {
             Intent(this, AddMufflePointActivity::class.java).also {
                 startActivity(it)
             }
+        }
+
+        val dummyMapFragment = supportFragmentManager
+            .findFragmentById(R.id.dummyMapInitializer) as SupportMapFragment
+        dummyMapFragment.getMapAsync {
+            Log.d(TAG, "Google Play services package should be now loaded.")
         }
     }
 
