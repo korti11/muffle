@@ -52,40 +52,44 @@ class AddMufflePointActivityViewModel @Inject constructor(
         mapZoom.value = zoomLevel
     }
 
-    suspend fun saveMufflePoint(
+    fun saveMufflePoint(
         name: String,
         image: Bitmap,
         ringtoneVolume: Int,
         mediaVolume: Int,
         notificationVolume: Int,
         alarmVolume: Int
-    ) = withContext(Dispatchers.IO) {
-        var latitude = 0.0
-        var longitude = 0.0
-        var radius = 0.0
+    ) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                var latitude = 0.0
+                var longitude = 0.0
+                var radius = 0.0
 
-        withContext(Dispatchers.Main) {
-            latitude = mapMarker.value!!.position.latitude
-            longitude = mapMarker.value!!.position.longitude
-            radius = mapCircle.value!!.radius
+                withContext(Dispatchers.Main) {
+                    latitude = mapMarker.value!!.position.latitude
+                    longitude = mapMarker.value!!.position.longitude
+                    radius = mapCircle.value!!.radius
+                }
+
+                val uid = MufflePoint.nameToId(name)
+                val base64Image = MufflePoint.bitmapToBase64(image)
+                mufflePointDao.insertAll(
+                    MufflePoint(
+                        uid = uid,
+                        name = name,
+                        lat = latitude,
+                        lng = longitude,
+                        radius = radius,
+                        image = base64Image,
+                        ringtoneVolume = ringtoneVolume,
+                        mediaVolume = mediaVolume,
+                        notificationVolume = notificationVolume,
+                        alarmVolume = alarmVolume
+                    )
+                )
+            }
         }
-
-        val uid = MufflePoint.nameToId(name)
-        val base64Image = MufflePoint.bitmapToBase64(image)
-        mufflePointDao.insertAll(
-            MufflePoint(
-                uid = uid,
-                name = name,
-                lat = latitude,
-                lng = longitude,
-                radius = radius,
-                image = base64Image,
-                ringtoneVolume = ringtoneVolume,
-                mediaVolume = mediaVolume,
-                notificationVolume = notificationVolume,
-                alarmVolume = alarmVolume
-            )
-        )
     }
 
     private fun getZoomLevel(radius: Int): Float {

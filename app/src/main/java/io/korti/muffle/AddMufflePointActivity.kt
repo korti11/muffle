@@ -9,7 +9,6 @@ import android.widget.SeekBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.view.drawToBitmap
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -217,15 +216,16 @@ class AddMufflePointActivity : AppCompatActivity() {
                     .show()
                 lifecycleScope.launch {
                     withContext(Dispatchers.Default) {
-                        val mapImage = mapFragment.view!!.drawToBitmap()
-                        addMufflePointActivityViewModel.saveMufflePoint(
-                            muffleName.text.toString(),
-                            mapImage,
-                            if(ringtoneCheckBox.isChecked) ringtoneVolume.progress else -1,
-                            if(mediaCheckBox.isChecked) mediaVolume.progress else -1,
-                            if(notificationsCheckBox.isChecked) notificationsVolume.progress else -1,
-                            if(alarmCheckBox.isChecked) alarmVolume.progress else -1
-                        )
+                        map.snapshot {
+                            addMufflePointActivityViewModel.saveMufflePoint(
+                                muffleName.text.toString(),
+                                it,
+                                if (ringtoneCheckBox.isChecked) ringtoneVolume.progress else -1,
+                                if (mediaCheckBox.isChecked) mediaVolume.progress else -1,
+                                if (notificationsCheckBox.isChecked) notificationsVolume.progress else -1,
+                                if (alarmCheckBox.isChecked) alarmVolume.progress else -1
+                            )
+                        }
                     }
                     finish()
                 }

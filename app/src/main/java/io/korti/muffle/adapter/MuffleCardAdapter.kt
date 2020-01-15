@@ -1,7 +1,6 @@
 package io.korti.muffle.adapter
 
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.cardview.widget.CardView
@@ -135,8 +134,7 @@ class MuffleCardAdapter : PagedListAdapter<MufflePoint, MuffleCardAdapter.Muffle
     class MuffleCardHolder(private val cardView: CardView) : RecyclerView.ViewHolder(cardView) {
         fun bindTo(mufflePoint: MufflePoint) {
             cardView.apply {
-                val image = BitmapFactory.decodeResource(resources, R.drawable.map_default)
-                mapsImage.setImageBitmap(image)
+                (context as MainActivity).decodeBitmapAndSetImageView(mufflePoint.image, mapsImage)
                 muffleName.text = mufflePoint.name
                 muffleStatus.text =
                     context.getString(R.string.muffle_status,
