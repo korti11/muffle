@@ -15,6 +15,8 @@ interface ApplicationComponent {
 
     fun inject(activity: MainActivity)
 
+    fun inject(activity: AddMufflePointActivity)
+
     fun inject(activity: SelectMufflePointActivity)
 
     fun inject(mufflePointManager: MufflePointManager)

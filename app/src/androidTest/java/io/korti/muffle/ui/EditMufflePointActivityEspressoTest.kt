@@ -91,7 +91,7 @@ class EditMufflePointActivityEspressoTest {
 
     @Test
     fun onSaveButtonPress() {
-        Thread.sleep(500) // TODO: Replace this sometime with idle resources.
+        Thread.sleep(1000) // TODO: Replace this sometime with idle resources.
         onView(withId(R.id.muffleCards)).
             perform(scrollToPosition<MuffleCardAdapter.MuffleCardHolder>(0))
         onView(withChild(withText("Home"))).check(matches(isDisplayed()))

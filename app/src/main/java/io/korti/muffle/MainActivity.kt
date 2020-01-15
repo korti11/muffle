@@ -4,15 +4,19 @@ import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.SupportMapFragment
@@ -21,6 +25,9 @@ import io.korti.muffle.location.LocationManager
 import io.korti.muffle.viewmodel.MainActivityViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
@@ -129,6 +136,18 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    fun decodeBitmapAndSetImageView(image: String, imageView: ImageView) {
+        lifecycleScope.launch {
+            withContext(Dispatchers.Default) {
+                val imageAsBytes = Base64.decode(image, Base64.DEFAULT)
+                val bitmap = BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.size)
+                withContext(Dispatchers.Main) {
+                    imageView.setImageBitmap(bitmap)
+                }
+            }
         }
     }
 
