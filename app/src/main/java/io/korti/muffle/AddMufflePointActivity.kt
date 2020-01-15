@@ -1,5 +1,6 @@
 package io.korti.muffle
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -11,6 +12,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.CircleOptions
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import io.korti.muffle.viewmodel.AddMufflePointActivityViewModel
 import kotlinx.android.synthetic.main.activity_add_muffle_point.*
@@ -142,6 +144,17 @@ class AddMufflePointActivity : AppCompatActivity() {
                 true
             }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            val location: LatLng? =
+                data?.getParcelableExtra(SelectMufflePointActivity.LOCATION_RESULT)
+            if (location != null) {
+                addMufflePointActivityViewModel.updateCameraPosition(location)
+            }
         }
     }
 }

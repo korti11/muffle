@@ -23,4 +23,8 @@ class AddMufflePointActivityViewModel @Inject constructor(locationManager: Locat
         }
     }
 
+    fun updateCameraPosition(pos: LatLng) {
+        mapCameraPosition.value = pos
+    }
+
 }
