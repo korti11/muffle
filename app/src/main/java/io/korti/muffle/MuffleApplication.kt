@@ -8,8 +8,9 @@ import io.korti.muffle.database.AppDatabase
 import io.korti.muffle.location.LocationTransitionsJobIntentService
 import io.korti.muffle.module.ContextModule
 import io.korti.muffle.module.DatabaseModule
+import io.korti.muffle.module.NetworkModule
 
-@Component(modules = [DatabaseModule::class, ContextModule::class])
+@Component(modules = [DatabaseModule::class, ContextModule::class, NetworkModule::class])
 interface ApplicationComponent {
 
     fun inject(activity: MainActivity)

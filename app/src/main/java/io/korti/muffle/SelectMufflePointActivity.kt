@@ -1,10 +1,14 @@
 package io.korti.muffle
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -14,11 +18,13 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.MarkerOptions
 import io.korti.muffle.viewmodel.SelectMufflePointActivityViewModel
 import kotlinx.android.synthetic.main.activity_select_muffle_point.*
+import kotlinx.android.synthetic.main.content_select_muffle_point.*
 import javax.inject.Inject
 
 class SelectMufflePointActivity : AppCompatActivity() {
 
     companion object {
+        private val TAG = SelectMufflePointActivity::class.java.simpleName
         const val LOCATION_RESULT = "location_result"
     }
 
@@ -45,6 +51,21 @@ class SelectMufflePointActivity : AppCompatActivity() {
             Toast.makeText(this, "Show current location.", Toast.LENGTH_SHORT).show()
         }
 
+        searchText.setOnEditorActionListener { v, actionId, _ ->
+            Log.d(TAG, "Search for location")
+            return@setOnEditorActionListener when(actionId) {
+                EditorInfo.IME_ACTION_SEARCH -> {
+                    selectMufflePointActivityViewModel.requestLocation(v.text.toString())
+
+                    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+
+                    true
+                }
+                else -> false
+            }
+        }
+
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.googleMap) as SupportMapFragment
 
@@ -58,7 +79,7 @@ class SelectMufflePointActivity : AppCompatActivity() {
                 )
             )
             selectMufflePointActivityViewModel.cameraPosition.observe(this, Observer { pos ->
-                map.moveCamera(CameraUpdateFactory.newLatLng(pos))
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 15F))
             })
 
             map.isMyLocationEnabled = true
