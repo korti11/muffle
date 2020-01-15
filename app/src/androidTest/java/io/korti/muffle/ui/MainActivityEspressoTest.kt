@@ -99,7 +99,7 @@ class MainActivityEspressoTest {
     }
 
     @Test fun onClickEdit() {
-        Thread.sleep(500) // TODO: Replace this sometime with idle resources.
+        Thread.sleep(1000) // TODO: Replace this sometime with idle resources.
         onView(withId(R.id.muffleCards)).
             perform(RecyclerViewActions.scrollToPosition<MuffleCardAdapter.MuffleCardHolder>(0))
         onView(allOf(withId(R.id.editButton), isDescendantOfA(withChild(withText("Home")))))

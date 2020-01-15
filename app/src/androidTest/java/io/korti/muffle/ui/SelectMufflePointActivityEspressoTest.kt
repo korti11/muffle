@@ -20,7 +20,7 @@ class SelectMufflePointActivityEspressoTest {
 
     @Test
     fun onBackButtonPress() {
-        onView(withId(R.id.mapsImage)).perform(click())
+        onView(withId(R.id.selectActivityButton)).perform(click())
         onView(withText(R.string.title_activity_select_muffle_point))
             .check(matches(isDisplayed()))
         onView(withContentDescription("Navigate up"))
@@ -31,7 +31,7 @@ class SelectMufflePointActivityEspressoTest {
 
     @Test
     fun onSaveButtonPress() {
-        onView(withId(R.id.mapsImage)).perform(click())
+        onView(withId(R.id.selectActivityButton)).perform(click())
         onView(withText(R.string.title_activity_select_muffle_point))
             .check(matches(isDisplayed()))
         onView(withId(R.id.action_save)).perform(click())
@@ -44,7 +44,7 @@ class SelectMufflePointActivityEspressoTest {
 
     @Test
     fun onCurrentLocationButtonPress() {
-        onView(withId(R.id.mapsImage)).perform(click())
+        onView(withId(R.id.selectActivityButton)).perform(click())
         onView(withText(R.string.title_activity_select_muffle_point))
             .check(matches(isDisplayed()))
         onView(withId(R.id.fab)).perform(click())
