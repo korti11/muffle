@@ -45,9 +45,11 @@ class LocationManager @Inject constructor(val context: Context) {
 
     suspend fun getLastKnownLocation(): Location = withContext(Dispatchers.Default) {
         if(fusedLocationProviderClient.lastLocation != null) {
-            fusedLocationProviderClient.lastLocation.await()
-        } else {
-            Location("muffle_application")
+            val location = fusedLocationProviderClient.lastLocation.await()
+            if (location != null) {
+                return@withContext location
+            }
         }
+        Location("muffle_application")
     }
 }
