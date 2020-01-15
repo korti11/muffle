@@ -13,16 +13,15 @@
         android:layout_height="match_parent"
         android:background="#ECECEC">
 
-        <ImageView
-            android:id="@+id/mapsImage"
+        <fragment
+            android:id="@+id/googleMap"
+            class="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:scaleType="centerCrop"
             app:layout_constraintBottom_toTopOf="@+id/imageGuideline"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:srcCompat="@tools:sample/avatars" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/imageGuideline"

@@ -1,18 +1,36 @@
 package io.korti.muffle
 
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.CircleOptions
+import com.google.android.gms.maps.model.MarkerOptions
+import io.korti.muffle.viewmodel.AddMufflePointActivityViewModel
 import kotlinx.android.synthetic.main.activity_add_muffle_point.*
 import kotlinx.android.synthetic.main.content_add_muffle_point.*
+import javax.inject.Inject
 
 class AddMufflePointActivity : AppCompatActivity() {
 
+    companion object {
+        private val TAG = AddMufflePointActivity::class.java
+        private const val REQUEST_CODE = 1
+    }
+
+    @Inject
+    lateinit var addMufflePointActivityViewModel: AddMufflePointActivityViewModel
+
+    private lateinit var map: GoogleMap
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        (applicationContext as MuffleApplication).appComponent.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_muffle_point)
         setSupportActionBar(toolbar)
@@ -22,12 +40,38 @@ class AddMufflePointActivity : AppCompatActivity() {
             this.finish()
         }
 
-        val image = BitmapFactory.decodeResource(resources, R.drawable.map_default)
-        mapsImage.setImageBitmap(image)
+        val mapFragment = supportFragmentManager
+            .findFragmentById(R.id.googleMap) as SupportMapFragment
 
-        mapsImage.setOnClickListener {
-            Intent(this, SelectMufflePointActivity::class.java).also {
-                startActivity(it)
+        mapFragment.getMapAsync {
+            map = it
+
+            map.moveCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                    addMufflePointActivityViewModel.mapCameraPosition.value,
+                    16.5F
+                )
+            )
+
+            addMufflePointActivityViewModel.mapCameraPosition.observe(this, Observer { pos ->
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 15F))
+                addMufflePointActivityViewModel.mapCircle.value?.center = pos
+                addMufflePointActivityViewModel.mapMarker.value?.position = pos
+            })
+            addMufflePointActivityViewModel.mapCircle.value = map.addCircle(
+                CircleOptions().center(addMufflePointActivityViewModel.mapCameraPosition.value)
+                    .radius(muffleRange.progress.toDouble())
+            )
+            addMufflePointActivityViewModel.mapMarker.value = map.addMarker(
+                MarkerOptions().position(addMufflePointActivityViewModel.mapCameraPosition.value!!)
+            )
+
+            map.uiSettings.setAllGesturesEnabled(false)
+            map.uiSettings.isMyLocationButtonEnabled = false
+            map.setOnMapClickListener {
+                Intent(this, SelectMufflePointActivity::class.java).also { intent ->
+                    startActivityForResult(intent, REQUEST_CODE)
+                }
             }
         }
     }
