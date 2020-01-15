@@ -103,6 +103,12 @@ class AddMufflePointActivity : AppCompatActivity() {
         alarmVolume.max = audioManager.getMaxVolumeOfPhone(android.media.AudioManager.STREAM_ALARM)
         alarmVolume.progress = alarmVolume.max / 2
 
+        selectActivityButton.setOnClickListener {
+            Intent(this, SelectMufflePointActivity::class.java).also { intent ->
+                startActivityForResult(intent, REQUEST_CODE)
+            }
+        }
+
         mapFragment = supportFragmentManager
             .findFragmentById(R.id.googleMap) as SupportMapFragment
 
@@ -144,11 +150,11 @@ class AddMufflePointActivity : AppCompatActivity() {
 
             map.uiSettings.setAllGesturesEnabled(false)
             map.uiSettings.isMyLocationButtonEnabled = false
-            map.setOnMapClickListener {
+            /*map.setOnMapClickListener {
                 Intent(this, SelectMufflePointActivity::class.java).also { intent ->
                     startActivityForResult(intent, REQUEST_CODE)
                 }
-            }
+            }*/
         }
     }
 
