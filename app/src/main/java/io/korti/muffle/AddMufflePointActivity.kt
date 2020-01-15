@@ -5,8 +5,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.SeekBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -22,7 +24,7 @@ import javax.inject.Inject
 class AddMufflePointActivity : AppCompatActivity() {
 
     companion object {
-        private val TAG = AddMufflePointActivity::class.java
+        private val TAG = AddMufflePointActivity::class.java.simpleName
         private const val REQUEST_CODE = 1
     }
 
@@ -42,6 +44,43 @@ class AddMufflePointActivity : AppCompatActivity() {
             this.finish()
         }
 
+        rangeLabel.text = this.getString(R.string.label_range, muffleRange.progress + 100)
+        muffleRange.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            /**
+             * Notification that the progress level has changed. Clients can use the fromUser parameter
+             * to distinguish user-initiated changes from those that occurred programmatically.
+             *
+             * @param seekBar The SeekBar whose progress has changed
+             * @param progress The current progress level. This will be in the range min..max where min
+             * and max were set by [ProgressBar.setMin] and
+             * [ProgressBar.setMax], respectively. (The default values for
+             * min is 0 and max is 100.)
+             * @param fromUser True if the progress change was initiated by the user.
+             */
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                addMufflePointActivityViewModel.updateRadius(progress)
+                rangeLabel.text = seekBar?.context?.getString(R.string.label_range, progress + 100)
+            }
+
+            /**
+             * Notification that the user has started a touch gesture. Clients may want to use this
+             * to disable advancing the seekbar.
+             * @param seekBar The SeekBar in which the touch gesture began
+             */
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                // I don't need this
+            }
+
+            /**
+             * Notification that the user has finished a touch gesture. Clients may want to use this
+             * to re-enable advancing the seekbar.
+             * @param seekBar The SeekBar in which the touch gesture began
+             */
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                // I don't need this
+            }
+        })
+
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.googleMap) as SupportMapFragment
 
@@ -51,7 +90,7 @@ class AddMufflePointActivity : AppCompatActivity() {
             map.moveCamera(
                 CameraUpdateFactory.newLatLngZoom(
                     addMufflePointActivityViewModel.mapCameraPosition.value,
-                    16.5F
+                    addMufflePointActivityViewModel.mapZoom.value!!
                 )
             )
 
@@ -62,11 +101,24 @@ class AddMufflePointActivity : AppCompatActivity() {
             })
             addMufflePointActivityViewModel.mapCircle.value = map.addCircle(
                 CircleOptions().center(addMufflePointActivityViewModel.mapCameraPosition.value)
-                    .radius(muffleRange.progress.toDouble())
+                    .radius(muffleRange.progress.toDouble() + 100).strokeColor(
+                        ContextCompat.getColor(
+                            this,
+                            R.color.colorAccent
+                        )
+                    )
             )
             addMufflePointActivityViewModel.mapMarker.value = map.addMarker(
                 MarkerOptions().position(addMufflePointActivityViewModel.mapCameraPosition.value!!)
             )
+            addMufflePointActivityViewModel.mapZoom.observe(this, Observer { zoom ->
+                map.moveCamera(
+                    CameraUpdateFactory.newLatLngZoom(
+                        addMufflePointActivityViewModel.mapCameraPosition.value,
+                        zoom
+                    )
+                )
+            })
 
             map.uiSettings.setAllGesturesEnabled(false)
             map.uiSettings.isMyLocationButtonEnabled = false

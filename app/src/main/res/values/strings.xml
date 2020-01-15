@@ -8,7 +8,7 @@
     <string name="btn_edit">Edit</string>
     <string name="title_activity_add_muffle_point">Create</string>
     <string name="label_name">Name</string>
-    <string name="label_range">Range</string>
+    <string name="label_range">Range (%d m)</string>
     <string name="label_ringtone">Ringtone</string>
     <string name="label_media">Media</string>
     <string name="label_notifications">Notifications</string>
