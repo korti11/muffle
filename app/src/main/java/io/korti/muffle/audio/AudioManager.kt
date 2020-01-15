@@ -22,6 +22,10 @@ class AudioManager @Inject constructor(private val context: Context) {
         Context.MODE_PRIVATE
     )
 
+    fun getMaxVolumeOfPhone(audioStream: Int): Int {
+        return audioManager.getStreamMaxVolume(audioStream)
+    }
+
     /**
      * Stores the current audio settings and replace it with the given from the muffle point.
      * @param mufflePoint Muffle point with the new audio settings.

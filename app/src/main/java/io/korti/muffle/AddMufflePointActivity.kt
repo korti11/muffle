@@ -9,16 +9,22 @@ import android.widget.SeekBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.drawToBitmap
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import io.korti.muffle.audio.AudioManager
 import io.korti.muffle.viewmodel.AddMufflePointActivityViewModel
 import kotlinx.android.synthetic.main.activity_add_muffle_point.*
 import kotlinx.android.synthetic.main.content_add_muffle_point.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class AddMufflePointActivity : AppCompatActivity() {
@@ -30,8 +36,11 @@ class AddMufflePointActivity : AppCompatActivity() {
 
     @Inject
     lateinit var addMufflePointActivityViewModel: AddMufflePointActivityViewModel
+    @Inject
+    lateinit var audioManager: AudioManager
 
     private lateinit var map: GoogleMap
+    private lateinit var mapFragment: SupportMapFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         (applicationContext as MuffleApplication).appComponent.inject(this)
@@ -81,7 +90,21 @@ class AddMufflePointActivity : AppCompatActivity() {
             }
         })
 
-        val mapFragment = supportFragmentManager
+        ringtoneVolume.max =
+            audioManager.getMaxVolumeOfPhone(android.media.AudioManager.STREAM_RING)
+        ringtoneVolume.progress = ringtoneVolume.max / 2
+
+        mediaVolume.max = audioManager.getMaxVolumeOfPhone(android.media.AudioManager.STREAM_MUSIC)
+        mediaVolume.progress = mediaVolume.max / 2
+
+        notificationsVolume.max =
+            audioManager.getMaxVolumeOfPhone(android.media.AudioManager.STREAM_NOTIFICATION)
+        notificationsVolume.progress = notificationsVolume.max / 2
+
+        alarmVolume.max = audioManager.getMaxVolumeOfPhone(android.media.AudioManager.STREAM_ALARM)
+        alarmVolume.progress = alarmVolume.max / 2
+
+        mapFragment = supportFragmentManager
             .findFragmentById(R.id.googleMap) as SupportMapFragment
 
         mapFragment.getMapAsync {
@@ -192,7 +215,20 @@ class AddMufflePointActivity : AppCompatActivity() {
             R.id.action_save -> {
                 Toast.makeText(this, "New muffle point added.", Toast.LENGTH_SHORT)
                     .show()
-                this.finish()
+                lifecycleScope.launch {
+                    withContext(Dispatchers.Default) {
+                        val mapImage = mapFragment.view!!.drawToBitmap()
+                        addMufflePointActivityViewModel.saveMufflePoint(
+                            muffleName.text.toString(),
+                            mapImage,
+                            if(ringtoneCheckBox.isChecked) ringtoneVolume.progress else -1,
+                            if(mediaCheckBox.isChecked) mediaVolume.progress else -1,
+                            if(notificationsCheckBox.isChecked) notificationsVolume.progress else -1,
+                            if(alarmCheckBox.isChecked) alarmVolume.progress else -1
+                        )
+                    }
+                    finish()
+                }
                 true
             }
             else -> super.onOptionsItemSelected(item)

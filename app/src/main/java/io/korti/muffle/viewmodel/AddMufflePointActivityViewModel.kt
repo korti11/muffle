@@ -1,5 +1,6 @@
 package io.korti.muffle.viewmodel
 
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,12 +8,20 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.Circle
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
+import io.korti.muffle.database.dao.MufflePointDao
+import io.korti.muffle.database.entity.MufflePoint
 import io.korti.muffle.location.LocationManager
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.math.atan
 
-class AddMufflePointActivityViewModel @Inject constructor(locationManager: LocationManager) : ViewModel() {
+class AddMufflePointActivityViewModel @Inject constructor(
+    locationManager: LocationManager,
+    private val mufflePointDao: MufflePointDao
+) :
+    ViewModel() {
 
     companion object {
         private val TAG = AddMufflePointActivityViewModel::class.java.simpleName
@@ -41,6 +50,42 @@ class AddMufflePointActivityViewModel @Inject constructor(locationManager: Locat
         Log.d(TAG, "Radius: $newRadius, Zoom: $zoomLevel")
         mapCircle.value?.radius = newRadius
         mapZoom.value = zoomLevel
+    }
+
+    suspend fun saveMufflePoint(
+        name: String,
+        image: Bitmap,
+        ringtoneVolume: Int,
+        mediaVolume: Int,
+        notificationVolume: Int,
+        alarmVolume: Int
+    ) = withContext(Dispatchers.IO) {
+        var latitude = 0.0
+        var longitude = 0.0
+        var radius = 0.0
+
+        withContext(Dispatchers.Main) {
+            latitude = mapMarker.value!!.position.latitude
+            longitude = mapMarker.value!!.position.longitude
+            radius = mapCircle.value!!.radius
+        }
+
+        val uid = MufflePoint.nameToId(name)
+        val base64Image = MufflePoint.bitmapToBase64(image)
+        mufflePointDao.insertAll(
+            MufflePoint(
+                uid = uid,
+                name = name,
+                lat = latitude,
+                lng = longitude,
+                radius = radius,
+                image = base64Image,
+                ringtoneVolume = ringtoneVolume,
+                mediaVolume = mediaVolume,
+                notificationVolume = notificationVolume,
+                alarmVolume = alarmVolume
+            )
+        )
     }
 
     private fun getZoomLevel(radius: Int): Float {
