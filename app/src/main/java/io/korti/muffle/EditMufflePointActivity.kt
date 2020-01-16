@@ -95,6 +95,12 @@ class EditMufflePointActivity : AppCompatActivity() {
 
         })
 
+        deleteButton.setOnClickListener {
+            Toast.makeText(this, "Deleted muffle point.", Toast.LENGTH_SHORT).show()
+            editMufflePointActivityViewModel.deleteMufflePoint()
+            this.finish()
+        }
+
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.googleMap) as SupportMapFragment
 

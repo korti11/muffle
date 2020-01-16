@@ -83,6 +83,17 @@ class EditMufflePointActivityViewModel @Inject constructor(private val mufflePoi
         }
     }
 
+    fun deleteMufflePoint() {
+        viewModelScope.launch {
+            val mufflePoint = mufflePoint.value
+            if(mufflePoint != null) {
+                withContext(Dispatchers.IO) {
+                    mufflePointDao.delete(mufflePoint)
+                }
+            }
+        }
+    }
+
     fun updateRadius(radius: Int) {
         val newRadius = radius.toDouble() + 100
         val zoomLevel = getZoomLevel(radius)
