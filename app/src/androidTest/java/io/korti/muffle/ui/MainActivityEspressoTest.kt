@@ -69,39 +69,76 @@ class MainActivityEspressoTest {
     private fun delete(mufflePointId: String) {
         val mufflePointDao = MuffleApplication.getDatabase().getMufflePointDao()
         val point = mufflePointDao.getById(mufflePointId)
-        if(point != null) {
+        if (point != null) {
             mufflePointDao.delete(point)
         }
     }
 
-    @Test fun disableMufflePoint() {
+    @Test
+    fun disableMufflePoint() {
         Thread.sleep(500) // TODO: Replace this sometime with idle resources.
-        onView(withId(R.id.muffleCards)).
-            perform(RecyclerViewActions.scrollToPosition<MuffleCardAdapter.MuffleCardHolder>(0))
+        onView(withId(R.id.muffleCards)).perform(
+            RecyclerViewActions.scrollToPosition<MuffleCardAdapter.MuffleCardHolder>(
+                0
+            )
+        )
         onView(withChild(withText("Home"))).check(matches(isDisplayed()))
-        onView(allOf(withText("Disable"), isDescendantOfA(allOf(withChild(withText("Home")), withChild(
-            withText("Status: Active")))))).perform(click())
+        onView(
+            allOf(
+                withText("Disable"),
+                isDescendantOfA(allOf(withChild(withText("Home"))))
+            )
+        ).perform(click())
         Thread.sleep(500)
-        onView(allOf(withId(R.id.muffleStatus), isDescendantOfA(withChild(withText("Home"))))).check(
-            matches(withText("Status: Disabled")))
+        onView(
+            allOf(
+                withId(R.id.muffleStatus),
+                isDescendantOfA(withChild(withText("Home")))
+            )
+        ).check(
+            matches(withText("Status: Disabled"))
+        )
     }
 
-    @Test fun enableMufflePoint() {
+    @Test
+    fun enableMufflePoint() {
         Thread.sleep(500) // TODO: Replace this sometime with idle resources.
-        onView(withId(R.id.muffleCards)).
-            perform(RecyclerViewActions.scrollToPosition<MuffleCardAdapter.MuffleCardHolder>(1))
+        onView(withId(R.id.muffleCards)).perform(
+            RecyclerViewActions.scrollToPosition<MuffleCardAdapter.MuffleCardHolder>(
+                1
+            )
+        )
         onView(withChild(withText("Work"))).check(matches(isDisplayed()))
-        onView(allOf(withText("Enable"), isDescendantOfA(allOf(withChild(withText("Work")), withChild(
-            withText("Status: Disabled")))))).perform(click())
+        onView(
+            allOf(
+                withText("Enable"), isDescendantOfA(
+                    allOf(
+                        withChild(withText("Work")), withChild(
+                            withText("Status: Disabled")
+                        )
+                    )
+                )
+            )
+        ).perform(click())
         Thread.sleep(500)
-        onView(allOf(withId(R.id.muffleStatus), isDescendantOfA(withChild(withText("Work"))))).check(
-            matches(withText("Status: Not active")))
+        onView(
+            allOf(
+                withId(R.id.muffleStatus),
+                isDescendantOfA(withChild(withText("Work")))
+            )
+        ).check(
+            matches(withText("Status: Not active"))
+        )
     }
 
-    @Test fun onClickEdit() {
+    @Test
+    fun onClickEdit() {
         Thread.sleep(1000) // TODO: Replace this sometime with idle resources.
-        onView(withId(R.id.muffleCards)).
-            perform(RecyclerViewActions.scrollToPosition<MuffleCardAdapter.MuffleCardHolder>(0))
+        onView(withId(R.id.muffleCards)).perform(
+            RecyclerViewActions.scrollToPosition<MuffleCardAdapter.MuffleCardHolder>(
+                0
+            )
+        )
         onView(allOf(withId(R.id.editButton), isDescendantOfA(withChild(withText("Home")))))
             .perform(click())
         onView(withText(R.string.title_activity_edit_muffle_point))
@@ -110,12 +147,14 @@ class MainActivityEspressoTest {
             .check(matches(withText("Home")))*/ // Currently not working and this is intended.
     }
 
-    @Test fun onClickFAB() {
+    @Test
+    fun onClickFAB() {
         onView(withId(R.id.fab)).perform(click())
         onView(withText("Create")).check(matches(isDisplayed()))
     }
 
-    @Test fun onClickSync() {
+    @Test
+    fun onClickSync() {
         openActionBarOverflowOrOptionsMenu(activityRule.activity)
         onView(withText(R.string.action_sync)).perform(click())
         onView(withText("Sync with firebase."))
@@ -124,7 +163,8 @@ class MainActivityEspressoTest {
         Thread.sleep(200) // Not good but easier then idle resources for just waiting that a toast disappear
     }
 
-    @Test fun onClickSettings() {
+    @Test
+    fun onClickSettings() {
         openActionBarOverflowOrOptionsMenu(activityRule.activity)
         onView(withText(R.string.action_settings)).perform(click())
         onView(withText("Open SettingsActivity."))

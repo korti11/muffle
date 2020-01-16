@@ -66,7 +66,7 @@ class EditMufflePointActivityEspressoTest {
     private fun delete(mufflePointId: String) {
         val mufflePointDao = MuffleApplication.getDatabase().getMufflePointDao()
         val point = mufflePointDao.getById(mufflePointId)
-        if(point != null) {
+        if (point != null) {
             mufflePointDao.delete(point)
         }
     }
@@ -74,15 +74,18 @@ class EditMufflePointActivityEspressoTest {
     @Test
     fun onBackButtonPress() {
         Thread.sleep(500) // TODO: Replace this sometime with idle resources.
-        onView(withId(R.id.muffleCards)).
-            perform(scrollToPosition<MuffleCardAdapter.MuffleCardHolder>(0))
+        onView(withId(R.id.muffleCards)).perform(
+            scrollToPosition<MuffleCardAdapter.MuffleCardHolder>(
+                0
+            )
+        )
         onView(withChild(withText("Home"))).check(matches(isDisplayed()))
         onView(allOf(withId(R.id.editButton), isDescendantOfA(withChild(withText("Home")))))
             .perform(ViewActions.click())
         onView(withText(R.string.title_activity_edit_muffle_point))
             .check(matches(isDisplayed()))
-        /*onView(withId(R.id.muffleName))
-            .check(matches(withText("Home")))*/ // Currently not working and this is intended.
+        onView(withId(R.id.muffleName))
+            .check(matches(withText("Home")))
         onView(withContentDescription("Navigate up"))
             .perform(ViewActions.click())
         onView(withText(R.string.app_name))
@@ -92,19 +95,26 @@ class EditMufflePointActivityEspressoTest {
     @Test
     fun onSaveButtonPress() {
         Thread.sleep(1000) // TODO: Replace this sometime with idle resources.
-        onView(withId(R.id.muffleCards)).
-            perform(scrollToPosition<MuffleCardAdapter.MuffleCardHolder>(0))
+        onView(withId(R.id.muffleCards)).perform(
+            scrollToPosition<MuffleCardAdapter.MuffleCardHolder>(
+                0
+            )
+        )
         onView(withChild(withText("Home"))).check(matches(isDisplayed()))
         onView(allOf(withId(R.id.editButton), isDescendantOfA(withChild(withText("Home")))))
             .perform(ViewActions.click())
         onView(withText(R.string.title_activity_edit_muffle_point))
             .check(matches(isDisplayed()))
-        /*onView(withId(R.id.muffleName))
-            .check(matches(withText("Home")))*/ // Currently not working and this is intended.
+        onView(withId(R.id.muffleName))
+            .check(matches(withText("Home")))
+        onView(withId(R.id.muffleName)).perform(ViewActions.clearText())
+            .perform(ViewActions.typeText("New Home"))
         onView(withId(R.id.action_save)).perform(ViewActions.click())
+        Thread.sleep(1000)  // TODO: Replace this sometime with idle resources.
         onView(withText("Edited muffle point saved."))
             .inRoot(withDecorView(not(`is`(activityRule.activity.window.decorView))))
             .check(matches(isDisplayed()))
+        onView(withText("New Home")).check(matches(isDisplayed()))
         onView(withText(R.string.app_name))
             .check(matches(isDisplayed()))
     }
