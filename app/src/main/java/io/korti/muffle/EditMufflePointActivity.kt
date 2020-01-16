@@ -8,7 +8,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
@@ -18,6 +20,9 @@ import io.korti.muffle.database.entity.MufflePoint
 import io.korti.muffle.viewmodel.EditMufflePointActivityViewModel
 import kotlinx.android.synthetic.main.activity_edit_muffle_point.*
 import kotlinx.android.synthetic.main.content_edit_muffle_point.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class EditMufflePointActivity : AppCompatActivity() {
@@ -31,6 +36,8 @@ class EditMufflePointActivity : AppCompatActivity() {
 
     @Inject
     lateinit var audioManager: AudioManager
+
+    private lateinit var map: GoogleMap
 
     override fun onCreate(savedInstanceState: Bundle?) {
         (applicationContext as MuffleApplication).appComponent.inject(this)
@@ -92,6 +99,7 @@ class EditMufflePointActivity : AppCompatActivity() {
             .findFragmentById(R.id.googleMap) as SupportMapFragment
 
         mapFragment.getMapAsync { map ->
+            this.map = map
             editMufflePointActivityViewModel.mufflePoint.observe(this, Observer {
                 editMufflePointActivityViewModel.mapCircle.value = map.addCircle(
                     CircleOptions().center(
@@ -118,6 +126,7 @@ class EditMufflePointActivity : AppCompatActivity() {
                 rangeLabel.text =
                     applicationContext.getString(R.string.label_range, it.radius.toInt())
                 enableSwitch.isChecked = it.status >= MufflePoint.Status.ENABLE
+                muffleRange.progress = it.radius.toInt()
                 ringtoneCheckBox.isChecked = it.ringtoneVolume >= 0
                 ringtoneVolume.progress = if (ringtoneCheckBox.isChecked) it.ringtoneVolume else 0
                 mediaCheckBox.isChecked = it.mediaVolume >= 0
@@ -196,7 +205,22 @@ class EditMufflePointActivity : AppCompatActivity() {
             R.id.action_save -> {
                 Toast.makeText(this, "Edited muffle point saved.", Toast.LENGTH_SHORT)
                     .show()
-                this.finish()
+                lifecycleScope.launch {
+                    withContext(Dispatchers.Default) {
+                        map.snapshot {
+                            editMufflePointActivityViewModel.saveMufflePoint(
+                                muffleName.text.toString(),
+                                it,
+                                enableSwitch.isChecked,
+                                if (ringtoneCheckBox.isChecked) ringtoneVolume.progress else -1,
+                                if (mediaCheckBox.isChecked) mediaVolume.progress else -1,
+                                if (notificationsCheckBox.isChecked) notificationsVolume.progress else -1,
+                                if (alarmCheckBox.isChecked) alarmVolume.progress else -1
+                            )
+                        }
+                    }
+                    finish()
+                }
                 true
             }
             else -> super.onOptionsItemSelected(item)

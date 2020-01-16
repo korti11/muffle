@@ -1,5 +1,6 @@
 package io.korti.muffle.viewmodel
 
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -31,6 +32,52 @@ class EditMufflePointActivityViewModel @Inject constructor(private val mufflePoi
                 withContext(Dispatchers.Main) {
                     mapZoom.value = getZoomLevel(mufflePoint.radius.toInt())
                     this@EditMufflePointActivityViewModel.mufflePoint.value = mufflePoint
+                }
+            }
+        }
+    }
+
+    fun saveMufflePoint(
+        name: String,
+        image: Bitmap,
+        enabled: Boolean,
+        ringtoneVolume: Int,
+        mediaVolume: Int,
+        notificationVolume: Int,
+        alarmVolume: Int
+    ) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                var radius = 0.0
+
+                withContext(Dispatchers.Main) {
+                    radius = mapCircle.value!!.radius
+                }
+
+                val base64Image = MufflePoint.bitmapToBase64(image)
+                val mufflePoint = this@EditMufflePointActivityViewModel.mufflePoint.value
+
+                mufflePoint?.apply {
+                    if(this.radius != radius) {
+                        this.image = base64Image
+                        this.radius = radius
+                    }
+
+                    if (status >= MufflePoint.Status.ENABLE && enabled.not()) {
+                        status = MufflePoint.Status.DISABLED
+                    } else if (status == MufflePoint.Status.DISABLED && enabled) {
+                        status = MufflePoint.Status.ENABLE
+                    }
+
+                    this.name = name
+                    this.ringtoneVolume = ringtoneVolume
+                    this.mediaVolume = mediaVolume
+                    this.notificationVolume = notificationVolume
+                    this.alarmVolume = alarmVolume
+                }
+
+                if (mufflePoint != null) {
+                    mufflePointDao.update(mufflePoint)
                 }
             }
         }

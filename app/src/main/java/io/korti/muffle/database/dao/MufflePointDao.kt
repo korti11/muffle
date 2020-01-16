@@ -1,10 +1,7 @@
 package io.korti.muffle.database.dao
 
 import androidx.paging.DataSource
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 import io.korti.muffle.database.entity.MufflePoint
 
 @Dao
@@ -39,6 +36,9 @@ interface MufflePointDao {
 
     @Query("UPDATE muffle_point SET point_status = :status WHERE uid = :mufflePointId")
     fun updateStatus(mufflePointId: String, status: Int)
+
+    @Update
+    fun update(mufflePoint: MufflePoint)
 
     @Delete
     fun delete(mufflePoint: MufflePoint)
