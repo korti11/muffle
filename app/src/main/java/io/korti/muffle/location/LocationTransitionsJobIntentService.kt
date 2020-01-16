@@ -7,7 +7,7 @@ import androidx.core.app.JobIntentService
 import com.google.android.gms.location.LocationResult
 import io.korti.muffle.MuffleApplication
 import io.korti.muffle.MufflePointManager
-import kotlinx.coroutines.*
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 class LocationTransitionsJobIntentService : JobIntentService() {
@@ -20,9 +20,6 @@ class LocationTransitionsJobIntentService : JobIntentService() {
             enqueueWork(context, LocationTransitionsJobIntentService::class.java, JOB_ID, intent)
         }
     }
-
-    private val job = Job()
-    private val serviceScope = CoroutineScope(Dispatchers.Default + job)
 
     @Inject
     lateinit var mufflePointManager: MufflePointManager
@@ -58,16 +55,8 @@ class LocationTransitionsJobIntentService : JobIntentService() {
                     runBlocking {
                         mufflePointManager.processLocations(result.lastLocation)
                     }   // Could not find a better solution for the time.
-                    /*serviceScope.launch {
-                        mufflePointManager.processLocations(result.lastLocation)
-                    }*/
                 }
             }
         }
-    }
-
-    override fun onDestroy() {
-        serviceScope.cancel()
-        super.onDestroy()
     }
 }

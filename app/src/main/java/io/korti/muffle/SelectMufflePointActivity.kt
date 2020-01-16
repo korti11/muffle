@@ -157,7 +157,7 @@ class SelectMufflePointActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_save -> {
-                Toast.makeText(this, "Position selected.", Toast.LENGTH_SHORT)
+                Toast.makeText(this, getString(R.string.toast_position_selected), Toast.LENGTH_SHORT)
                     .show()
                 val result = Intent()
                 result.putExtra(

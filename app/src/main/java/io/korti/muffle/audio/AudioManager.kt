@@ -8,7 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class AudioManager @Inject constructor(private val context: Context) {
+class AudioManager @Inject constructor(context: Context) {
 
     companion object {
         const val MUFFLING_SUCCESS = 1

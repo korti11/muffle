@@ -96,7 +96,7 @@ class EditMufflePointActivity : AppCompatActivity() {
         })
 
         deleteButton.setOnClickListener {
-            Toast.makeText(this, "Deleted muffle point.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.toast_muffle_point_deleted), Toast.LENGTH_SHORT).show()
             editMufflePointActivityViewModel.deleteMufflePoint()
             this.finish()
         }
@@ -209,7 +209,7 @@ class EditMufflePointActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_save -> {
-                Toast.makeText(this, "Edited muffle point saved.", Toast.LENGTH_SHORT)
+                Toast.makeText(this, getString(R.string.toast_muffle_point_edited), Toast.LENGTH_SHORT)
                     .show()
                 lifecycleScope.launch {
                     withContext(Dispatchers.Default) {
