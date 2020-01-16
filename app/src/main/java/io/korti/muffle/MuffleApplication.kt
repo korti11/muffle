@@ -19,6 +19,8 @@ interface ApplicationComponent {
 
     fun inject(activity: SelectMufflePointActivity)
 
+    fun inject(activity: EditMufflePointActivity)
+
     fun inject(mufflePointManager: MufflePointManager)
 
     fun inject(locationTransitionsJobIntentService: LocationTransitionsJobIntentService)

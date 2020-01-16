@@ -2,12 +2,22 @@ package io.korti.muffle
 
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Base64
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import io.korti.muffle.audio.AudioManager
+import io.korti.muffle.database.entity.MufflePoint
+import io.korti.muffle.viewmodel.EditMufflePointActivityViewModel
 import kotlinx.android.synthetic.main.activity_edit_muffle_point.*
 import kotlinx.android.synthetic.main.content_edit_muffle_point.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 class EditMufflePointActivity : AppCompatActivity() {
 
@@ -15,7 +25,14 @@ class EditMufflePointActivity : AppCompatActivity() {
         val MUFFLE_POINT_EXTRA = "MUFFLE_POINT_EXTRA"
     }
 
+    @Inject
+    lateinit var editMufflePointActivityViewModel: EditMufflePointActivityViewModel
+
+    @Inject
+    lateinit var audioManager: AudioManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        (applicationContext as MuffleApplication).appComponent.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_muffle_point)
         setSupportActionBar(toolbar)
@@ -26,10 +43,40 @@ class EditMufflePointActivity : AppCompatActivity() {
             this.finish()
         }
 
-        val image = BitmapFactory.decodeResource(resources, R.drawable.map_default)
-        mapsImage.setImageBitmap(image)
+        ringtoneVolume.max =
+            audioManager.getMaxVolumeOfPhone(android.media.AudioManager.STREAM_RING)
+        mediaVolume.max = audioManager.getMaxVolumeOfPhone(android.media.AudioManager.STREAM_MUSIC)
+        notificationsVolume.max =
+            audioManager.getMaxVolumeOfPhone(android.media.AudioManager.STREAM_NOTIFICATION)
+        alarmVolume.max = audioManager.getMaxVolumeOfPhone(android.media.AudioManager.STREAM_ALARM)
+
+        editMufflePointActivityViewModel.mufflePoint.observe(this, Observer {
+            lifecycleScope.launch {
+                withContext(Dispatchers.Default) {
+                    val imageAsByteArray = Base64.decode(it.image, Base64.DEFAULT)
+                    val bitmap =
+                        BitmapFactory.decodeByteArray(imageAsByteArray, 0, imageAsByteArray.size)
+                    withContext(Dispatchers.Main) {
+                        mapsImage.setImageBitmap(bitmap)
+                    }
+                }
+            }
+            muffleName.setText(it.name)
+            rangeLabel.text = applicationContext.getString(R.string.label_range, it.radius.toInt())
+            enableSwitch.isChecked = it.status >= MufflePoint.Status.ENABLE
+            ringtoneCheckBox.isChecked = it.ringtoneVolume >= 0
+            ringtoneVolume.progress = if (ringtoneCheckBox.isChecked) it.ringtoneVolume else 0
+            mediaCheckBox.isChecked = it.mediaVolume >= 0
+            mediaVolume.progress = if (mediaCheckBox.isChecked) it.mediaVolume else 0
+            notificationsCheckBox.isChecked = it.notificationVolume >= 0
+            notificationsVolume.progress =
+                if (notificationsCheckBox.isChecked) it.notificationVolume else 0
+            alarmCheckBox.isChecked = it.alarmVolume >= 0
+            alarmVolume.progress = if (alarmCheckBox.isChecked) it.alarmVolume else 0
+        })
 
         val mufflePointId = intent.extras?.getString(MUFFLE_POINT_EXTRA)
+        editMufflePointActivityViewModel.loadMufflePoint(mufflePointId.orEmpty())
     }
 
     /**
