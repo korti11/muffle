@@ -24,6 +24,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import io.korti.muffle.adapter.MuffleCardAdapter
 import io.korti.muffle.location.LocationManager
 import io.korti.muffle.viewmodel.MainActivityViewModel
@@ -46,6 +47,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var mainViewModel: MainActivityViewModel
     @Inject
     lateinit var locationManager: LocationManager
+    @Inject
+    lateinit var remoteConfig: FirebaseRemoteConfig
 
     private val muffleCardAdapter = MuffleCardAdapter()
     private lateinit var muffleCardLayout: RecyclerView.LayoutManager
@@ -125,7 +128,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
-        return true
+        return remoteConfig.getBoolean("show_menu_main_activity")
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

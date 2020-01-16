@@ -11,8 +11,6 @@ class LocationBroadcastReceiver : BroadcastReceiver() {
             "io.korti.muffle.action.PROCESS_UPDATES"
     }
 
-    private val TAG = LocationBroadcastReceiver::class.java.simpleName
-
     /**
      * This method is called when the BroadcastReceiver is receiving an Intent
      * broadcast.  During this time you can use the other methods on

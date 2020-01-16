@@ -39,7 +39,6 @@ class AddMufflePointActivity : AppCompatActivity() {
     lateinit var audioManager: AudioManager
 
     private lateinit var map: GoogleMap
-    private lateinit var mapFragment: SupportMapFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         (applicationContext as MuffleApplication).appComponent.inject(this)
@@ -109,7 +108,7 @@ class AddMufflePointActivity : AppCompatActivity() {
             }
         }
 
-        mapFragment = supportFragmentManager
+        val mapFragment = supportFragmentManager
             .findFragmentById(R.id.googleMap) as SupportMapFragment
 
         mapFragment.getMapAsync {
@@ -150,11 +149,6 @@ class AddMufflePointActivity : AppCompatActivity() {
 
             map.uiSettings.setAllGesturesEnabled(false)
             map.uiSettings.isMyLocationButtonEnabled = false
-            /*map.setOnMapClickListener {
-                Intent(this, SelectMufflePointActivity::class.java).also { intent ->
-                    startActivityForResult(intent, REQUEST_CODE)
-                }
-            }*/
         }
     }
 
@@ -218,7 +212,7 @@ class AddMufflePointActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_save -> {
-                Toast.makeText(this, "New muffle point added.", Toast.LENGTH_SHORT)
+                Toast.makeText(this, getString(R.string.toast_muffle_point_added), Toast.LENGTH_SHORT)
                     .show()
                 lifecycleScope.launch {
                     withContext(Dispatchers.Default) {
