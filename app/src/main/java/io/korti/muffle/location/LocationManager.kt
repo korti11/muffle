@@ -7,18 +7,18 @@ import android.location.Location
 import android.util.Log
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class LocationManager @Inject constructor(val context: Context) {
+class LocationManager @Inject constructor(
+    val context: Context,
+    val firebaseRemoteConfig: FirebaseRemoteConfig
+) {
 
     companion object {
-        private const val UPDATE_INVERVAL: Long  = 60000 * 5  // Every 5 minutes
-        private const val FASTEST_UPDATE_INTERVAL: Long = (60000 * 2.5).toLong() // Every 2.5 minutes
-        private const val MAX_WAIT_TIME: Long = 60000 * 10    // Every 10 minutes
-
         val TAG = LocationManager::class.java.simpleName
     }
 
@@ -31,10 +31,18 @@ class LocationManager @Inject constructor(val context: Context) {
     }
     private val locationRequest: LocationRequest by lazy {
         val request = LocationRequest()
-        request.interval = UPDATE_INVERVAL
-        request.fastestInterval = FASTEST_UPDATE_INTERVAL
+        val updateInterval = firebaseRemoteConfig.getLong("update_interval")
+        val fastestInterval = firebaseRemoteConfig.getLong("fastest_update_interval")
+        val maxWaitTime = firebaseRemoteConfig.getLong("max_wait_time")
+
+        Log.d(TAG, "Update interval: $updateInterval")
+        Log.d(TAG, "Fastest interval: $fastestInterval")
+        Log.d(TAG, "Max wait time: $maxWaitTime")
+
+        request.interval = updateInterval
+        request.fastestInterval = fastestInterval
         request.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        request.maxWaitTime = MAX_WAIT_TIME
+        request.maxWaitTime = maxWaitTime
         request
     }
 
@@ -44,7 +52,7 @@ class LocationManager @Inject constructor(val context: Context) {
     }
 
     suspend fun getLastKnownLocation(): Location = withContext(Dispatchers.Default) {
-        if(fusedLocationProviderClient.lastLocation != null) {
+        if (fusedLocationProviderClient.lastLocation != null) {
             val location = fusedLocationProviderClient.lastLocation.await()
             if (location != null) {
                 return@withContext location
