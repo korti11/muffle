@@ -9,6 +9,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import dagger.Component
 import io.korti.muffle.database.AppDatabase
+import io.korti.muffle.location.LocationBootJobIntentService
 import io.korti.muffle.location.LocationManager
 import io.korti.muffle.location.LocationTransitionsJobIntentService
 import io.korti.muffle.module.ContextModule
@@ -30,6 +31,8 @@ interface ApplicationComponent {
     fun inject(mufflePointManager: MufflePointManager)
 
     fun inject(locationTransitionsJobIntentService: LocationTransitionsJobIntentService)
+
+    fun inject(locationBootJobIntentService: LocationBootJobIntentService)
 
 }
 
