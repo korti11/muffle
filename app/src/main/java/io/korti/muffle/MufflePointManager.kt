@@ -27,6 +27,9 @@ class MufflePointManager @Inject constructor(
             mufflePointDao.updateStatus(mufflePoint.uid, MufflePoint.Status.DISABLED)
             if(mufflePoint.status == MufflePoint.Status.ACTIVE) {
                 val newActiveArea = mufflePointDao.getInAreaMufflePoint()
+                if(newActiveArea != null) {
+                    mufflePointDao.updateStatus(newActiveArea.uid, MufflePoint.Status.ACTIVE)
+                }
                 audioManager.reverseOrUpdateMuffle(newActiveArea)
             }
         } else {
