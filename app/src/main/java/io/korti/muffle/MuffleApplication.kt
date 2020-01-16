@@ -2,16 +2,21 @@ package io.korti.muffle
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import androidx.room.Room
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import dagger.Component
 import io.korti.muffle.database.AppDatabase
+import io.korti.muffle.location.LocationManager
 import io.korti.muffle.location.LocationTransitionsJobIntentService
 import io.korti.muffle.module.ContextModule
 import io.korti.muffle.module.DatabaseModule
+import io.korti.muffle.module.FirebaseModule
 import io.korti.muffle.module.NetworkModule
 
-@Component(modules = [DatabaseModule::class, ContextModule::class, NetworkModule::class])
+@Component(modules = [DatabaseModule::class, ContextModule::class, NetworkModule::class, FirebaseModule::class])
 interface ApplicationComponent {
 
     fun inject(activity: MainActivity)
@@ -31,6 +36,7 @@ interface ApplicationComponent {
 class MuffleApplication : Application() {
 
     companion object {
+        private val TAG = MuffleApplication::class.java.simpleName
         private lateinit var database: AppDatabase
         private lateinit var appContext: Context
         private lateinit var firebaseAnalytics: FirebaseAnalytics
@@ -77,6 +83,25 @@ class MuffleApplication : Application() {
             .build()
         appContext = applicationContext
         firebaseAnalytics = FirebaseAnalytics.getInstance(this)
+
+        val firebaseRemoteConfig = FirebaseRemoteConfig.getInstance()
+        val configSettings =
+            FirebaseRemoteConfigSettings.Builder().setMinimumFetchIntervalInSeconds(3600).build()
+        firebaseRemoteConfig.setConfigSettingsAsync(configSettings)
+        firebaseRemoteConfig.setDefaultsAsync(R.xml.remote_config_defaults)
+        firebaseRemoteConfig.fetchAndActivate().run {
+            addOnCompleteListener {
+                if (it.isSuccessful) {
+                    Log.d(TAG, "Config params updated.")
+                    LocationManager(
+                        this@MuffleApplication,
+                        firebaseRemoteConfig
+                    ).requestLocationUpdates()
+                } else {
+                    Log.e(TAG, "Could not update config params.")
+                }
+            }
+        }
     }
 
     val appComponent: ApplicationComponent = DaggerApplicationComponent.create()

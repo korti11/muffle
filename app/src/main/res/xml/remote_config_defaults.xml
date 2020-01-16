@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<defaultsMap>
+    <entry>
+        <key>update_interval</key>
+        <value>300000</value>
+    </entry>
+    <entry>
+        <key>fastest_update_interval</key>
+        <value>150000</value>
+    </entry>
+    <entry>
+        <key>max_wait_time</key>
+        <value>600000</value>
+    </entry>
+</defaultsMap>
