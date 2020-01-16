@@ -145,7 +145,7 @@ class MufflePointManager @Inject constructor(
 
     private fun createNotification(mufflePoint: MufflePoint): Notification {
         return NotificationCompat.Builder(context, MainActivity.CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.mipmap.ic_notification)
             .setContentTitle(context.getString(R.string.notification_title))
             .setContentText(context.getString(R.string.notification_text, mufflePoint.name))
             .setOngoing(true)
