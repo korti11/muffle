@@ -34,4 +34,8 @@
     <string name="audio_levels_preferences_key">io.korti.muffle.audio.levels</string>
     <string name="muffle_point_status_in_area">In area</string>
     <string name="muffle_point_status_unknown">Unknown</string>
+    <string name="notification_title">Muffle point active</string>
+    <string name="notification_text">Muffle point %s is currently active.</string>
+    <string name="notification_channel_name">Active Muffle Points</string>
+    <string name="notification_channel_description">Notification channel for the low priority notifications to show that a muffle point is active</string>
 </resources>
