@@ -5,11 +5,9 @@ import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.database.sqlite.SQLiteConstraintException
 import android.util.Log
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
-import androidx.test.espresso.matcher.RootMatchers.withDecorView
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
@@ -20,8 +18,6 @@ import io.korti.muffle.MuffleApplication
 import io.korti.muffle.R
 import io.korti.muffle.adapter.MuffleCardAdapter
 import io.korti.muffle.database.entity.MufflePoint
-import org.hamcrest.Matchers.`is`
-import org.hamcrest.Matchers.not
 import org.hamcrest.core.AllOf.allOf
 import org.junit.After
 import org.junit.Before
@@ -153,25 +149,4 @@ class MainActivityEspressoTest {
         onView(withText("Create")).check(matches(isDisplayed()))
     }
 
-    @Test
-    fun onClickSync() {
-        openActionBarOverflowOrOptionsMenu(activityRule.activity)
-        onView(withText(R.string.action_sync)).perform(click())
-        Thread.sleep(1000)
-        onView(withText("Sync with firebase."))
-            .inRoot(withDecorView(not(`is`(activityRule.activity.window.decorView))))
-            .check(matches(isDisplayed()))
-        Thread.sleep(200) // Not good but easier then idle resources for just waiting that a toast disappear
-    }
-
-    @Test
-    fun onClickSettings() {
-        openActionBarOverflowOrOptionsMenu(activityRule.activity)
-        onView(withText(R.string.action_settings)).perform(click())
-        Thread.sleep(1000)
-        onView(withText("Open SettingsActivity."))
-            .inRoot(withDecorView(not(`is`(activityRule.activity.window.decorView))))
-            .check(matches(isDisplayed()))
-        Thread.sleep(200) // Not good but easier then idle resources for just waiting that a toast disappear
-    }
 }

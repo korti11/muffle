@@ -7,7 +7,6 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
-import androidx.test.espresso.matcher.RootMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
@@ -17,7 +16,6 @@ import io.korti.muffle.MainActivity
 import io.korti.muffle.MuffleApplication
 import io.korti.muffle.R
 import io.korti.muffle.adapter.MuffleCardAdapter
-import org.hamcrest.Matchers
 import org.junit.After
 import org.junit.Rule
 import org.junit.Test
@@ -61,9 +59,6 @@ class AddMufflePointActivityEspressoTest {
         onView(withText(R.string.title_activity_add_muffle_point)).check(matches(isDisplayed()))
         onView(withId(R.id.muffleName)).perform(typeText("JKU"))
         onView(withId(R.id.action_save)).perform(click())
-        onView(withText("New muffle point added."))
-            .inRoot(RootMatchers.withDecorView(Matchers.not(Matchers.`is`(activityRule.activity.window.decorView))))
-            .check(matches(isDisplayed()))
         Thread.sleep(1500) // TODO: Replace this sometime with idle resources.
         onView(withId(R.id.muffleCards)).
             perform(RecyclerViewActions.scrollToPosition<MuffleCardAdapter.MuffleCardHolder>(0))

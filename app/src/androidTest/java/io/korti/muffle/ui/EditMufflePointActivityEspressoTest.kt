@@ -8,7 +8,6 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
-import androidx.test.espresso.matcher.RootMatchers.withDecorView
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
@@ -19,7 +18,7 @@ import io.korti.muffle.MuffleApplication
 import io.korti.muffle.R
 import io.korti.muffle.adapter.MuffleCardAdapter
 import io.korti.muffle.database.entity.MufflePoint
-import org.hamcrest.Matchers.*
+import org.hamcrest.Matchers.allOf
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -111,9 +110,6 @@ class EditMufflePointActivityEspressoTest {
             .perform(ViewActions.typeText("New Home"))
         onView(withId(R.id.action_save)).perform(ViewActions.click())
         Thread.sleep(1500)  // TODO: Replace this sometime with idle resources.
-        onView(withText("Edited muffle point saved."))
-            .inRoot(withDecorView(not(`is`(activityRule.activity.window.decorView))))
-            .check(matches(isDisplayed()))
         onView(withText("New Home")).check(matches(isDisplayed()))
         onView(withText(R.string.app_name))
             .check(matches(isDisplayed()))
