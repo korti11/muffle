@@ -3,6 +3,7 @@ package io.korti.muffle
 import android.app.Application
 import android.content.Context
 import androidx.room.Room
+import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.Component
 import io.korti.muffle.database.AppDatabase
 import io.korti.muffle.location.LocationTransitionsJobIntentService
@@ -32,6 +33,7 @@ class MuffleApplication : Application() {
     companion object {
         private lateinit var database: AppDatabase
         private lateinit var appContext: Context
+        private lateinit var firebaseAnalytics: FirebaseAnalytics
 
         fun getDatabase(): AppDatabase {
             return database
@@ -39,6 +41,10 @@ class MuffleApplication : Application() {
 
         fun getAppContext(): Context {
             return appContext
+        }
+
+        fun getFirebaseAnalytics(): FirebaseAnalytics {
+            return firebaseAnalytics
         }
     }
 
@@ -70,6 +76,7 @@ class MuffleApplication : Application() {
             .databaseBuilder(this, AppDatabase::class.java, "muffle-database")
             .build()
         appContext = applicationContext
+        firebaseAnalytics = FirebaseAnalytics.getInstance(this)
     }
 
     val appComponent: ApplicationComponent = DaggerApplicationComponent.create()
