@@ -64,7 +64,7 @@ class AddMufflePointActivityEspressoTest {
         onView(withText("New muffle point added."))
             .inRoot(RootMatchers.withDecorView(Matchers.not(Matchers.`is`(activityRule.activity.window.decorView))))
             .check(matches(isDisplayed()))
-        Thread.sleep(1000) // TODO: Replace this sometime with idle resources.
+        Thread.sleep(1500) // TODO: Replace this sometime with idle resources.
         onView(withId(R.id.muffleCards)).
             perform(RecyclerViewActions.scrollToPosition<MuffleCardAdapter.MuffleCardHolder>(0))
         onView(withText("JKU")).check(matches(isDisplayed()))

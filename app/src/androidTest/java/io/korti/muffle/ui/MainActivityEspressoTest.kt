@@ -76,7 +76,7 @@ class MainActivityEspressoTest {
 
     @Test
     fun disableMufflePoint() {
-        Thread.sleep(500) // TODO: Replace this sometime with idle resources.
+        Thread.sleep(1000) // TODO: Replace this sometime with idle resources.
         onView(withId(R.id.muffleCards)).perform(
             RecyclerViewActions.scrollToPosition<MuffleCardAdapter.MuffleCardHolder>(
                 0
@@ -89,7 +89,7 @@ class MainActivityEspressoTest {
                 isDescendantOfA(allOf(withChild(withText("Home"))))
             )
         ).perform(click())
-        Thread.sleep(500)
+        Thread.sleep(1000)
         onView(
             allOf(
                 withId(R.id.muffleStatus),
@@ -102,7 +102,7 @@ class MainActivityEspressoTest {
 
     @Test
     fun enableMufflePoint() {
-        Thread.sleep(500) // TODO: Replace this sometime with idle resources.
+        Thread.sleep(1000) // TODO: Replace this sometime with idle resources.
         onView(withId(R.id.muffleCards)).perform(
             RecyclerViewActions.scrollToPosition<MuffleCardAdapter.MuffleCardHolder>(
                 1
@@ -120,7 +120,7 @@ class MainActivityEspressoTest {
                 )
             )
         ).perform(click())
-        Thread.sleep(500)
+        Thread.sleep(1000)
         onView(
             allOf(
                 withId(R.id.muffleStatus),
@@ -143,8 +143,8 @@ class MainActivityEspressoTest {
             .perform(click())
         onView(withText(R.string.title_activity_edit_muffle_point))
             .check(matches(isDisplayed()))
-        /*onView(withId(R.id.muffleName))
-            .check(matches(withText("Home")))*/ // Currently not working and this is intended.
+        onView(withId(R.id.muffleName))
+            .check(matches(withText("Home")))
     }
 
     @Test
@@ -157,6 +157,7 @@ class MainActivityEspressoTest {
     fun onClickSync() {
         openActionBarOverflowOrOptionsMenu(activityRule.activity)
         onView(withText(R.string.action_sync)).perform(click())
+        Thread.sleep(1000)
         onView(withText("Sync with firebase."))
             .inRoot(withDecorView(not(`is`(activityRule.activity.window.decorView))))
             .check(matches(isDisplayed()))
@@ -167,6 +168,7 @@ class MainActivityEspressoTest {
     fun onClickSettings() {
         openActionBarOverflowOrOptionsMenu(activityRule.activity)
         onView(withText(R.string.action_settings)).perform(click())
+        Thread.sleep(1000)
         onView(withText("Open SettingsActivity."))
             .inRoot(withDecorView(not(`is`(activityRule.activity.window.decorView))))
             .check(matches(isDisplayed()))

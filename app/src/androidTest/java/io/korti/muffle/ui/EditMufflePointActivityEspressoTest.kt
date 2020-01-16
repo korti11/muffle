@@ -110,7 +110,7 @@ class EditMufflePointActivityEspressoTest {
         onView(withId(R.id.muffleName)).perform(ViewActions.clearText())
             .perform(ViewActions.typeText("New Home"))
         onView(withId(R.id.action_save)).perform(ViewActions.click())
-        Thread.sleep(1000)  // TODO: Replace this sometime with idle resources.
+        Thread.sleep(1500)  // TODO: Replace this sometime with idle resources.
         onView(withText("Edited muffle point saved."))
             .inRoot(withDecorView(not(`is`(activityRule.activity.window.decorView))))
             .check(matches(isDisplayed()))
