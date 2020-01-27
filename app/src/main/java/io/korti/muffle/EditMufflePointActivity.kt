@@ -132,7 +132,7 @@ class EditMufflePointActivity : AppCompatActivity() {
                 rangeLabel.text =
                     applicationContext.getString(R.string.label_range, it.radius.toInt())
                 enableSwitch.isChecked = it.status >= MufflePoint.Status.ENABLE
-                muffleRange.progress = it.radius.toInt()
+                muffleRange.progress = it.radius.toInt() - 100
                 ringtoneCheckBox.isChecked = it.ringtoneVolume >= 0
                 ringtoneVolume.progress = if (ringtoneCheckBox.isChecked) it.ringtoneVolume else 0
                 mediaCheckBox.isChecked = it.mediaVolume >= 0
