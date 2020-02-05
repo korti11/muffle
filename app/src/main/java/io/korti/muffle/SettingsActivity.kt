@@ -5,17 +5,23 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import kotlinx.android.synthetic.main.activity_settings.*
 
 class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.settings_activity)
+        setContentView(R.layout.activity_settings)
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
+        toolbar.setNavigationOnClickListener {
+            this.finish()
+        }
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.settings, SettingsFragment())
             .commit()
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     class SettingsFragment : PreferenceFragmentCompat() {
@@ -24,7 +30,7 @@ class SettingsActivity : AppCompatActivity() {
 
             val appInfo: Preference? = findPreference("app_info")
             appInfo?.setOnPreferenceClickListener {
-                Intent(it.context, AppInfoActivity::class.java).also {intent ->
+                Intent(it.context, AppInfoActivity::class.java).also { intent ->
                     startActivity(intent)
                 }
                 true
