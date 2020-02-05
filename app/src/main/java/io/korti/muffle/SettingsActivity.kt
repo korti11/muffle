@@ -1,7 +1,7 @@
 package io.korti.muffle
 
+import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
@@ -24,7 +24,9 @@ class SettingsActivity : AppCompatActivity() {
 
             val appInfo: Preference? = findPreference("app_info")
             appInfo?.setOnPreferenceClickListener {
-                Toast.makeText(it.context, "Show app info.", Toast.LENGTH_SHORT).show()
+                Intent(it.context, AppInfoActivity::class.java).also {intent ->
+                    startActivity(intent)
+                }
                 true
             }
         }
