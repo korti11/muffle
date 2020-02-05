@@ -18,9 +18,13 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
+            android:name=".OpenSourceLicensesActivity"
+            android:label="@string/title_activity_open_source_licenses"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
             android:name=".AppInfoActivity"
             android:label="@string/title_activity_app_info"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"

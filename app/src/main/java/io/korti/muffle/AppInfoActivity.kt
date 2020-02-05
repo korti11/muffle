@@ -1,5 +1,6 @@
 package io.korti.muffle
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_app_info.*
@@ -19,6 +20,11 @@ class AppInfoActivity : AppCompatActivity() {
         appVersion.apply {
             val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
             text = context.getString(R.string.label_version, packageInfo.versionName)
+        }
+        licensesButton.setOnClickListener {
+            Intent(it.context, OpenSourceLicensesActivity::class.java).also { intent ->
+                startActivity(intent)
+            }
         }
     }
 

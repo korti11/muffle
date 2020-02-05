@@ -12,6 +12,8 @@ apply plugin: 'io.fabric'
 
 apply plugin: 'com.google.firebase.firebase-perf'
 
+apply plugin: 'com.jaredsburrows.license'
+
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
@@ -39,6 +41,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+}
+
+licenseReport {
+    generateHtmlReport = true
+    generateJsonReport = true
+    copyHtmlReportToAssets = true
+    copyJsonReportToAssets = false
 }
 
 dependencies {

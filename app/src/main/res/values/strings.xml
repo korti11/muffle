@@ -40,4 +40,6 @@
     <string name="title_activity_app_info">App Info</string>
     <string name="label_version">Version %s</string>
     <string name="btn_licenses">Licenses</string>
+    <string name="ok">Ok</string>
+    <string name="title_activity_open_source_licenses">Open Source Licenses</string>
 </resources>
