@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="Android App" pattern="src[app]:io.korti.muffle..*||src[app]:io.korti.muffle.adapter..*||src[app]:io.korti.muffle.audio..*||src[app]:io.korti.muffle.database..*||src[app]:io.korti.muffle.database.dao..*||src[app]:io.korti.muffle.database.entity..*||src[app]:io.korti.muffle.location..*||src[app]:io.korti.muffle.module..*||src[app]:io.korti.muffle.viewmodel..*||src[app]:xml..*||src[app]:menu..*||src[app]:layout..*||src[app]:values..*||test:*..*" />
+</component>
