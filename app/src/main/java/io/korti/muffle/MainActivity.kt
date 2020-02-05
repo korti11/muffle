@@ -15,7 +15,6 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -136,12 +135,14 @@ class MainActivity : AppCompatActivity() {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_sync -> {
+            /*R.id.action_sync -> {
                 Toast.makeText(this, "Sync with firebase.", Toast.LENGTH_SHORT).show()
                 true
-            }
+            }*/
             R.id.action_settings -> {
-                Toast.makeText(this, "Open SettingsActivity.", Toast.LENGTH_SHORT).show()
+                Intent(this, SettingsActivity::class.java).also {
+                    startActivity(it)
+                }
                 true
             }
             else -> super.onOptionsItemSelected(item)

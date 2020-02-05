@@ -14,6 +14,6 @@
     </entry>
     <entry>
         <key>show_menu_main_activity</key>
-        <value>false</value>
+        <value>true</value>
     </entry>
 </defaultsMap>

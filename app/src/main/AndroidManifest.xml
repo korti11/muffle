@@ -3,20 +3,28 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="io.korti.muffle">
 
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
+        android:name=".MuffleApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:name=".MuffleApplication"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="io.korti.muffle.MainActivity" />
+        </activity>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -27,24 +35,24 @@
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
         <service
             android:name=".location.LocationBootJobIntentService"
             android:exported="true"
-            android:permission="android.permission.BIND_JOB_SERVICE"/>
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <receiver
             android:name=".location.LocationBroadcastReceiver"
             android:enabled="true"
-            android:exported="true"/>
+            android:exported="true" />
 
         <service
             android:name=".location.LocationTransitionsJobIntentService"
             android:exported="true"
-            android:permission="android.permission.BIND_JOB_SERVICE"/>
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <activity
             android:name=".SelectMufflePointActivity"

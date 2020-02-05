@@ -34,4 +34,7 @@
     <string name="toast_muffle_point_added">New muffle point added.</string>
     <string name="toast_muffle_point_deleted">Deleted muffle point.</string>
     <string name="toast_muffle_point_edited">Edited muffle point saved.</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="settings_category_info">Info</string>
+    <string name="settings_entry_app_info">App-Info</string>
 </resources>
