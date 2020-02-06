@@ -16,16 +16,12 @@
 
 package io.korti.muffle
 
-import android.app.Notification
-import android.content.Context
 import android.location.Location
 import android.util.Log
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat
 import io.korti.muffle.audio.AudioManager
 import io.korti.muffle.database.dao.MufflePointDao
 import io.korti.muffle.database.entity.MufflePoint
+import io.korti.muffle.notification.NotificationManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -33,7 +29,7 @@ import javax.inject.Inject
 class MufflePointManager @Inject constructor(
     private val mufflePointDao: MufflePointDao,
     private val audioManager: AudioManager,
-    private val context: Context
+    private val notificationManager: NotificationManager
 ) {
 
     companion object {
@@ -50,10 +46,10 @@ class MufflePointManager @Inject constructor(
             if (mufflePoint.status == MufflePoint.Status.ACTIVE) {
                 val newActiveArea = mufflePointDao.getInAreaMufflePoint()
                 if (newActiveArea != null) {
-                    showNotification(newActiveArea)
+                    notificationManager.showActivMufflePointNotification(newActiveArea)
                     mufflePointDao.updateStatus(newActiveArea.uid, MufflePoint.Status.ACTIVE)
                 } else {
-                    hideNotification()
+                    notificationManager.hideActiveMufflePointNotification()
                 }
                 audioManager.reverseOrUpdateMuffle(newActiveArea)
             }
@@ -105,13 +101,13 @@ class MufflePointManager @Inject constructor(
                 val newActiveMufflePoint = inAreaPoints[true]?.first()
                 if (newActiveMufflePoint != null) {
                     mufflePointDao.updateStatus(newActiveMufflePoint.uid, MufflePoint.Status.ACTIVE)
-                    showNotification(newActiveMufflePoint)
+                    notificationManager.showActivMufflePointNotification(newActiveMufflePoint)
                     Log.i(
                         TAG,
                         "Muffle point with id=${newActiveMufflePoint.uid} changed status from in area to active."
                     )
                 } else {
-                    hideNotification()
+                    notificationManager.hideActiveMufflePointNotification()
                 }
                 audioManager.reverseOrUpdateMuffle(newActiveMufflePoint)
                 Log.i(TAG, "Reversed or updated sound settings.")
@@ -136,7 +132,7 @@ class MufflePointManager @Inject constructor(
                 val newActiveMufflePoint = enabledMufflePoints.first()
                 mufflePointDao.updateStatus(newActiveMufflePoint.uid, MufflePoint.Status.ACTIVE)
                 audioManager.muffleSounds(newActiveMufflePoint)
-                showNotification(newActiveMufflePoint)
+                notificationManager.showActivMufflePointNotification(newActiveMufflePoint)
                 Log.i(TAG, "Muffle point with id=${newActiveMufflePoint.uid} is now active.")
                 skipFirst = true
             }
@@ -146,26 +142,5 @@ class MufflePointManager @Inject constructor(
         }
     }
 
-    private fun showNotification(mufflePoint: MufflePoint) {
-        val notification = createNotification(mufflePoint)
-        with(NotificationManagerCompat.from(context)) {
-            notify(0, notification)
-        }
-    }
 
-    private fun hideNotification() {
-        with(NotificationManagerCompat.from(context)) {
-            cancel(0)
-        }
-    }
-
-    private fun createNotification(mufflePoint: MufflePoint): Notification {
-        return NotificationCompat.Builder(context, MainActivity.CHANNEL_ID)
-            .setSmallIcon(R.mipmap.ic_notification)
-            .setContentTitle(context.getString(R.string.notification_title))
-            .setContentText(context.getString(R.string.notification_text, mufflePoint.name))
-            .setOngoing(true)
-            .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
-            .setPriority(NotificationCompat.PRIORITY_MIN).build()
-    }
 }
