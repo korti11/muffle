@@ -18,13 +18,9 @@ package io.korti.muffle
 
 import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
-import android.os.Build
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
@@ -42,6 +38,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import io.korti.muffle.adapter.MuffleCardAdapter
 import io.korti.muffle.location.LocationManager
+import io.korti.muffle.notification.NotificationManager
 import io.korti.muffle.viewmodel.MainActivityViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -53,7 +50,6 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity() {
 
     companion object {
-        const val CHANNEL_ID = "io.korti.muffle.low.priority"
         private val TAG = MainActivity::class.java.simpleName
         private const val LOCATION_PERMISSION_REQUEST = 1
     }
@@ -64,6 +60,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var locationManager: LocationManager
     @Inject
     lateinit var remoteConfig: FirebaseRemoteConfig
+    @Inject
+    lateinit var notificationManager: NotificationManager
 
     private val muffleCardAdapter = MuffleCardAdapter()
     private lateinit var muffleCardLayout: RecyclerView.LayoutManager
@@ -75,7 +73,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         checkPermissions()
-        createNotificationChannel()
+        notificationManager.createNotificationChannels()
 
         if (checkPermission(ACCESS_FINE_LOCATION)) {
             locationManager.requestLocationUpdates()
@@ -199,19 +197,5 @@ class MainActivity : AppCompatActivity() {
             this,
             permission
         ) == PackageManager.PERMISSION_GRANTED
-    }
-
-    private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = getString(R.string.notification_channel_name)
-            val description = getString(R.string.notification_channel_description)
-            val importance = NotificationManager.IMPORTANCE_MIN
-            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
-                this.description = description
-            }
-            val notificationManager =
-                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
-        }
     }
 }
