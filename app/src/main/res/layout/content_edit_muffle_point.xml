@@ -187,7 +187,7 @@
                 android:layout_marginTop="2dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/ringtoneLabel"
-                app:srcCompat="@drawable/ic_volume_down_black" />
+                app:srcCompat="@drawable/ic_volume_black" />
 
             <SeekBar
                 android:id="@+id/ringtoneVolume"
@@ -276,7 +276,7 @@
                 android:layout_marginTop="2dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/notificationsLabel"
-                app:srcCompat="@drawable/ic_chat_bubble_black" />
+                app:srcCompat="@drawable/ic_notifications_black" />
 
             <SeekBar
                 android:id="@+id/notificationsVolume"

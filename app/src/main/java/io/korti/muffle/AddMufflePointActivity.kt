@@ -34,6 +34,7 @@ import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import io.korti.muffle.audio.AudioManager
+import io.korti.muffle.listener.VolumeSeekBarChangeListener
 import io.korti.muffle.viewmodel.AddMufflePointActivityViewModel
 import kotlinx.android.synthetic.main.activity_add_muffle_point.*
 import kotlinx.android.synthetic.main.content_add_muffle_point.*
@@ -103,6 +104,34 @@ class AddMufflePointActivity : AppCompatActivity() {
                 // I don't need this
             }
         })
+        ringtoneVolume.setOnSeekBarChangeListener(
+            VolumeSeekBarChangeListener(
+                ringtoneIcon,
+                R.drawable.ic_volume_black,
+                R.drawable.ic_volume_off_black
+            )
+        )
+        mediaVolume.setOnSeekBarChangeListener(
+            VolumeSeekBarChangeListener(
+                mediaIcon,
+                R.drawable.ic_music_note_black,
+                R.drawable.ic_music_off_black
+            )
+        )
+        notificationsVolume.setOnSeekBarChangeListener(
+            VolumeSeekBarChangeListener(
+                notificationsIcon,
+                R.drawable.ic_notifications_black,
+                R.drawable.ic_notifications_off_black
+            )
+        )
+        alarmVolume.setOnSeekBarChangeListener(
+            VolumeSeekBarChangeListener(
+                alarmIcon,
+                R.drawable.ic_alarm_black,
+                R.drawable.ic_alarm_off_black
+            )
+        )
 
         ringtoneVolume.max =
             audioManager.getMaxVolumeOfPhone(android.media.AudioManager.STREAM_RING)
@@ -228,7 +257,11 @@ class AddMufflePointActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_save -> {
-                Toast.makeText(this, getString(R.string.toast_muffle_point_added), Toast.LENGTH_SHORT)
+                Toast.makeText(
+                    this,
+                    getString(R.string.toast_muffle_point_added),
+                    Toast.LENGTH_SHORT
+                )
                     .show()
                 lifecycleScope.launch {
                     withContext(Dispatchers.Default) {

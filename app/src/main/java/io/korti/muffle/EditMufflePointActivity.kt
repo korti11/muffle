@@ -19,6 +19,7 @@ package io.korti.muffle
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -33,6 +34,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import io.korti.muffle.audio.AudioManager
 import io.korti.muffle.database.entity.MufflePoint
+import io.korti.muffle.listener.VolumeSeekBarChangeListener
 import io.korti.muffle.viewmodel.EditMufflePointActivityViewModel
 import kotlinx.android.synthetic.main.activity_edit_muffle_point.*
 import kotlinx.android.synthetic.main.content_edit_muffle_point.*
@@ -110,9 +112,38 @@ class EditMufflePointActivity : AppCompatActivity() {
             }
 
         })
+        ringtoneVolume.setOnSeekBarChangeListener(
+            VolumeSeekBarChangeListener(
+                ringtoneIcon,
+                R.drawable.ic_volume_black,
+                R.drawable.ic_volume_off_black
+            )
+        )
+        mediaVolume.setOnSeekBarChangeListener(
+            VolumeSeekBarChangeListener(
+                mediaIcon,
+                R.drawable.ic_music_note_black,
+                R.drawable.ic_music_off_black
+            )
+        )
+        notificationsVolume.setOnSeekBarChangeListener(
+            VolumeSeekBarChangeListener(
+                notificationsIcon,
+                R.drawable.ic_notifications_black,
+                R.drawable.ic_notifications_off_black
+            )
+        )
+        alarmVolume.setOnSeekBarChangeListener(
+            VolumeSeekBarChangeListener(
+                alarmIcon,
+                R.drawable.ic_alarm_black,
+                R.drawable.ic_alarm_off_black
+            )
+        )
 
         deleteButton.setOnClickListener {
-            Toast.makeText(this, getString(R.string.toast_muffle_point_deleted), Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.toast_muffle_point_deleted), Toast.LENGTH_SHORT)
+                .show()
             editMufflePointActivityViewModel.deleteMufflePoint()
             this.finish()
         }
@@ -150,18 +181,54 @@ class EditMufflePointActivity : AppCompatActivity() {
                 enableSwitch.isChecked = it.status >= MufflePoint.Status.ENABLE
                 muffleRange.progress = it.radius.toInt() - 100
                 ringtoneCheckBox.isChecked = it.ringtoneVolume >= 0
-                ringtoneVolume.progress = if (ringtoneCheckBox.isChecked) it.ringtoneVolume else 0
+                setProgress(
+                    ringtoneVolume,
+                    ringtoneIcon,
+                    R.drawable.ic_volume_off_black,
+                    ringtoneCheckBox.isChecked,
+                    it.ringtoneVolume
+                )
                 mediaCheckBox.isChecked = it.mediaVolume >= 0
-                mediaVolume.progress = if (mediaCheckBox.isChecked) it.mediaVolume else 0
+                setProgress(
+                    mediaVolume,
+                    mediaIcon,
+                    R.drawable.ic_music_off_black,
+                    mediaCheckBox.isChecked,
+                    it.mediaVolume
+                )
                 notificationsCheckBox.isChecked = it.notificationVolume >= 0
-                notificationsVolume.progress =
-                    if (notificationsCheckBox.isChecked) it.notificationVolume else 0
+                setProgress(
+                    notificationsVolume,
+                    notificationsIcon,
+                    R.drawable.ic_notifications_off_black,
+                    notificationsCheckBox.isChecked,
+                    it.notificationVolume
+                )
                 alarmCheckBox.isChecked = it.alarmVolume >= 0
-                alarmVolume.progress = if (alarmCheckBox.isChecked) it.alarmVolume else 0
+                setProgress(
+                    alarmVolume,
+                    alarmIcon,
+                    R.drawable.ic_alarm_off_black,
+                    alarmCheckBox.isChecked,
+                    it.alarmVolume
+                )
             })
 
             val mufflePointId = intent.extras?.getString(MUFFLE_POINT_EXTRA)
             editMufflePointActivityViewModel.loadMufflePoint(mufflePointId.orEmpty())
+        }
+    }
+
+    private fun setProgress(
+        seekBar: SeekBar,
+        imageView: ImageView,
+        offIcon: Int,
+        isChecked: Boolean,
+        volume: Int
+    ) {
+        seekBar.progress = if (isChecked) volume else 0
+        if (seekBar.progress == 0) {
+            imageView.setImageDrawable(getDrawable(offIcon))
         }
     }
 
@@ -225,7 +292,11 @@ class EditMufflePointActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_save -> {
-                Toast.makeText(this, getString(R.string.toast_muffle_point_edited), Toast.LENGTH_SHORT)
+                Toast.makeText(
+                    this,
+                    getString(R.string.toast_muffle_point_edited),
+                    Toast.LENGTH_SHORT
+                )
                     .show()
                 lifecycleScope.launch {
                     withContext(Dispatchers.Default) {
