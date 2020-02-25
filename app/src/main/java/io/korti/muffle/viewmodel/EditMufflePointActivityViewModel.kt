@@ -22,6 +22,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.Circle
+import io.korti.muffle.MufflePointManager
 import io.korti.muffle.database.dao.MufflePointDao
 import io.korti.muffle.database.entity.MufflePoint
 import kotlinx.coroutines.Dispatchers
@@ -30,7 +31,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.math.atan
 
-class EditMufflePointActivityViewModel @Inject constructor(private val mufflePointDao: MufflePointDao) :
+class EditMufflePointActivityViewModel @Inject constructor(private val mufflePointDao: MufflePointDao, private val mufflePointManager: MufflePointManager) :
     ViewModel() {
 
     companion object {
@@ -79,10 +80,12 @@ class EditMufflePointActivityViewModel @Inject constructor(private val mufflePoi
                         this.radius = radius
                     }
 
-                    if (status >= MufflePoint.Status.ENABLE && enabled.not()) {
-                        status = MufflePoint.Status.DISABLED
-                    } else if (status == MufflePoint.Status.DISABLED && enabled) {
-                        status = MufflePoint.Status.ENABLE
+                    if(status != MufflePoint.Status.ACTIVE) {
+                        if (status >= MufflePoint.Status.ENABLE && enabled.not()) {
+                            status = MufflePoint.Status.DISABLED
+                        } else if (status == MufflePoint.Status.DISABLED && enabled) {
+                            status = MufflePoint.Status.ENABLE
+                        }
                     }
 
                     this.name = name
@@ -93,6 +96,11 @@ class EditMufflePointActivityViewModel @Inject constructor(private val mufflePoi
                 }
 
                 if (mufflePoint != null) {
+                    if(mufflePoint.status == MufflePoint.Status.ACTIVE && enabled.not()) {
+                        Log.d(TAG, "Disable active ")
+                        mufflePointManager.enableDisableMufflePoint(mufflePoint)
+                        mufflePoint.status = MufflePoint.Status.DISABLED
+                    }
                     mufflePointDao.update(mufflePoint)
                 }
             }
@@ -104,6 +112,9 @@ class EditMufflePointActivityViewModel @Inject constructor(private val mufflePoi
             val mufflePoint = mufflePoint.value
             if(mufflePoint != null) {
                 withContext(Dispatchers.IO) {
+                    if (mufflePoint.status == MufflePoint.Status.ACTIVE) {
+                        mufflePointManager.enableDisableMufflePoint(mufflePoint)
+                    }
                     mufflePointDao.delete(mufflePoint)
                 }
             }
