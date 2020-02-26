@@ -46,14 +46,14 @@ class AudioInstrumentTest {
         mufflePointDao = MuffleApplication.getDatabase().getMufflePointDao()
         mufflePointDao.insertAll(
             MufflePoint(
-                "home",
+                uid = 1,
                 name = "Home",
                 image = "",
                 status = MufflePoint.Status.ACTIVE,
                 ringtoneVolume = 5
             ),
             MufflePoint(
-                "work",
+                uid = 2,
                 name = "Work",
                 status = MufflePoint.Status.DISABLED,
                 image = "",
@@ -65,14 +65,14 @@ class AudioInstrumentTest {
 
     @After
     fun deleteTestData() {
-        mufflePointDao.delete(mufflePointDao.getById("home"))
-        mufflePointDao.delete(mufflePointDao.getById("work"))
+        mufflePointDao.delete(mufflePointDao.getById(1))
+        mufflePointDao.delete(mufflePointDao.getById(2))
     }
 
     @Test
     fun enterMufflePoint() {
         runBlocking {
-            val mufflePoint = mufflePointDao.getById("home")
+            val mufflePoint = mufflePointDao.getById(1)
             muffleAudioManager.muffleSounds(mufflePoint)
             assertThat(
                 "The ringtone volume should be 5",
@@ -85,7 +85,7 @@ class AudioInstrumentTest {
     @Test
     fun enterAndExitMufflePoint() {
         runBlocking {
-            val mufflePoint = mufflePointDao.getById("work")
+            val mufflePoint = mufflePointDao.getById(2)
             audioManager.setStreamVolume(AudioManager.STREAM_RING, 1, 0)
             audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 1, 0)
             muffleAudioManager.muffleSounds(mufflePoint)

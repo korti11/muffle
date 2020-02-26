@@ -24,11 +24,10 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import io.korti.muffle.R
 import java.io.ByteArrayOutputStream
-import java.util.*
 
 @Entity(tableName = "muffle_point")
 data class MufflePoint(
-    @PrimaryKey val uid: String,
+    @PrimaryKey(autoGenerate = true) val uid: Long = 0,
     @ColumnInfo(name = "latitude") var lat: Double = 0.0,
     @ColumnInfo(name = "longitude") var lng: Double = 0.0,
     @ColumnInfo(name = "point_radius") var radius: Double = 100.0,
@@ -42,10 +41,6 @@ data class MufflePoint(
 ) {
 
     companion object {
-        fun nameToId(name: String): String {
-            return name.toLowerCase(Locale.getDefault()).replace(" ", "_")
-        }
-
         fun bitmapToBase64(bitmap: Bitmap): String {
             var image = ByteArray(0)
             ByteArrayOutputStream().use {

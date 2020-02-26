@@ -42,7 +42,7 @@ class EditMufflePointActivityViewModel @Inject constructor(private val mufflePoi
     val mapCircle = MutableLiveData<Circle>()
     val mapZoom = MutableLiveData<Float>()
 
-    fun loadMufflePoint(mufflePointId: String) {
+    fun loadMufflePoint(mufflePointId: Long) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 val mufflePoint = mufflePointDao.getById(mufflePointId)

@@ -88,11 +88,9 @@ class AddMufflePointActivityViewModel @Inject constructor(
                     radius = mapCircle.value!!.radius
                 }
 
-                val uid = MufflePoint.nameToId(name)
                 val base64Image = MufflePoint.bitmapToBase64(image)
                 mufflePointDao.insertAll(
                     MufflePoint(
-                        uid = uid,
                         name = name,
                         lat = latitude,
                         lng = longitude,

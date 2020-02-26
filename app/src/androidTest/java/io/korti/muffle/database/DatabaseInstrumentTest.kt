@@ -56,28 +56,36 @@ class DatabaseInstrumentTest {
     @Test
     @Throws(Exception::class)
     fun writeAndReadMufflePointById() {
-        val mufflePoint = MufflePoint(
-            uid = "test-1",
+        var mufflePoint = MufflePoint(
             name = "Test 1",
             image = ""
         )
         mufflePointDao.insertAll(mufflePoint)
-        val byId = mufflePointDao.getById("test-1")
+        mufflePoint = MufflePoint(
+            uid = 1,
+            name = "Test 1",
+            image = ""
+        )
+        val byId = mufflePointDao.getById(1)
         assertThat("Found the wrong muffle point by the id.", byId, equalTo(mufflePoint))
     }
 
     @Test
     @Throws(Exception::class)
     fun writeReadAndDeleteMufflePoint() {
-        val mufflePoint = MufflePoint(
-            uid = "test-1",
+        var mufflePoint = MufflePoint(
             name = "Test 1",
             image = ""
         )
         mufflePointDao.insertAll(mufflePoint)
-        val byId = mufflePointDao.getById("test-1")
+        mufflePoint = MufflePoint(
+            uid = 1,
+            name = "Test 1",
+            image = ""
+        )
+        val byId = mufflePointDao.getById(1)
         mufflePointDao.delete(mufflePoint)
-        val deletedById = mufflePointDao.getById("test-1")
+        val deletedById = mufflePointDao.getById(1)
         assertThat("Found the wrong muffle point by the id.", byId, equalTo(mufflePoint))
         assertNull("Muffle point is not deleted.", deletedById)
     }
