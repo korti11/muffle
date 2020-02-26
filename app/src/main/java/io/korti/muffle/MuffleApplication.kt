@@ -25,6 +25,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import dagger.Component
 import io.korti.muffle.database.AppDatabase
+import io.korti.muffle.database.MIGRATION_1_2
 import io.korti.muffle.location.LocationBootJobIntentService
 import io.korti.muffle.location.LocationManager
 import io.korti.muffle.location.LocationTransitionsJobIntentService
@@ -99,6 +100,7 @@ class MuffleApplication : Application() {
         super.onCreate()
         database = Room
             .databaseBuilder(this, AppDatabase::class.java, "muffle-database")
+            .addMigrations(MIGRATION_1_2)
             .build()
         appContext = applicationContext
         firebaseAnalytics = FirebaseAnalytics.getInstance(this)

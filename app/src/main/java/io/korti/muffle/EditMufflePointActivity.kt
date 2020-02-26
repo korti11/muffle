@@ -217,8 +217,8 @@ class EditMufflePointActivity : AppCompatActivity() {
             map.uiSettings.setAllGesturesEnabled(false)
             map.uiSettings.isMyLocationButtonEnabled = false
 
-            val mufflePointId = intent.extras?.getString(MUFFLE_POINT_EXTRA)
-            editMufflePointActivityViewModel.loadMufflePoint(mufflePointId.orEmpty())
+            val mufflePointId = intent.extras?.getLong(MUFFLE_POINT_EXTRA) ?: 0
+            editMufflePointActivityViewModel.loadMufflePoint(mufflePointId)
         }
     }
 

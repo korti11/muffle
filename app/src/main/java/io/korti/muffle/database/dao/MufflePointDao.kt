@@ -24,7 +24,7 @@ import io.korti.muffle.database.entity.MufflePoint
 interface MufflePointDao {
 
     @Query("SELECT * FROM muffle_point WHERE uid = :mufflePointId")
-    fun getById(mufflePointId: String): MufflePoint
+    fun getById(mufflePointId: Long): MufflePoint
 
     @Query("SELECT * FROM muffle_point WHERE point_status = ${MufflePoint.Status.ACTIVE} LIMIT 1")
     fun getActiveMufflePoint(): MufflePoint?
@@ -38,9 +38,6 @@ interface MufflePointDao {
     @Query("SELECT * FROM muffle_point WHERE point_status = ${MufflePoint.Status.ENABLE}")
     fun getEnabledMufflePoints(): List<MufflePoint>
 
-    @Query("SELECT uid FROM muffle_point WHERE point_status = ${MufflePoint.Status.DISABLED}")
-    fun getDisabled(): List<String>
-
     @Query("SELECT * FROM muffle_point")
     fun getAllPaged(): DataSource.Factory<Int, MufflePoint>
 
@@ -51,7 +48,7 @@ interface MufflePointDao {
     fun insertAll(vararg mufflePoints: MufflePoint)
 
     @Query("UPDATE muffle_point SET point_status = :status WHERE uid = :mufflePointId")
-    fun updateStatus(mufflePointId: String, status: Int)
+    fun updateStatus(mufflePointId: Long, status: Int)
 
     @Update
     fun update(mufflePoint: MufflePoint)
