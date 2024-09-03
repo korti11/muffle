@@ -83,7 +83,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Downlaod column result
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4.1.7
         with:
           name: column-result
       - name: Write env variable
@@ -93,7 +93,7 @@ jobs:
           echo "::set-env name=COLUMN_NAME::$value"
       - name: Download branch name
         if: env.COLUMN_NAME == 'In testing'
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4.1.7
         with:
           name: branch-name
       - name: Write env variable
@@ -130,7 +130,7 @@ jobs:
     runs-on: macOS-latest
     steps:
       - name: Downlaod column result
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4.1.7
         with:
           name: column-result
       - name: Write env variable
@@ -140,7 +140,7 @@ jobs:
           echo "::set-env name=COLUMN_NAME::$value"
       - name: Download branch name
         if: env.COLUMN_NAME == 'In testing'
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4.1.7
         with:
           name: branch-name
       - name: Write env variable
@@ -172,7 +172,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download column result
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4.1.7
         with:
           name: column-result
       - name: Write env variable
@@ -182,7 +182,7 @@ jobs:
           echo "::set-env name=COLUMN_NAME::$value"
       - name: Download branch name
         if: env.COLUMN_NAME == 'In testing'
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4.1.7
         with:
           name: branch-name
       - name: Write env variable
